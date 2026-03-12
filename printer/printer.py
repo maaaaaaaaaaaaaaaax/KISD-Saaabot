@@ -1,7 +1,5 @@
 """High-level printer facade for thermal receipt printers."""
 
-from numpy import e
-
 from typing import Union, Optional, Literal, Sequence
 from pathlib import Path
 from escpos import printer

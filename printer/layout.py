@@ -1,6 +1,6 @@
 """Layout utilities for composing text and images on thermal receipts."""
 
-from typing import Literal, Optional, Union, List
+from typing import Literal, Optional, List
 from PIL import Image
 from .text import create_two_column_text, create_separator, pad_line, wrap_text
 
