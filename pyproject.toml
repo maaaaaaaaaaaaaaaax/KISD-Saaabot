@@ -1,0 +1,36 @@
+[project]
+name = "pi-printer"
+version = "0.1.0"
+description = "High-level wrapper for thermal receipt printers with image processing, text formatting, and layout utilities"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "python-escpos[all]>=3.1",
+    "pillow>=10.0.0",
+    "pyyaml>=6.0",
+    "requests>=2.31.0",
+    "opencv-python-headless>=4.8",
+]
+authors = [
+    { name = "M. Schmalenbach" }
+]
+keywords = ["thermal-printer", "receipt-printer", "escpos", "epson", "printing"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Printing",
+    "Topic :: Multimedia :: Graphics",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+]
+
+[project.urls]
+Homepage = "https://github.com/mschmalenbach/pi-printer"
+Repository = "https://github.com/mschmalenbach/pi-printer"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pi_printer", "camera"]

@@ -1,0 +1,95 @@
+# EPSON TM-T88IV Thermal Receipt Printer Profile
+# Specifications for print area, resolution, and capabilities
+
+printer:
+  model: "TM-T88IV"
+  vendor: "Epson"
+  
+  # Physical specifications
+  paper_width_mm: 80
+  print_width_dots: 576  # at 203 DPI
+  dpi: 203  # dots per inch (8 dots per mm)
+  
+  # Usable print area (accounting for margins and printer limitations)
+  max_image_width_px: 512
+  
+  # Character widths for built-in fonts (dots per character)
+  # TM-T88IV only has fonts 'a' and 'b'
+  font_widths:
+    a: 12  # Font A: 12x24 dots
+    b: 9   # Font B: 9x17 dots
+  
+  # Character widths (characters per line at 1x size)
+  # Adjusted for actual usable width to prevent overflow
+  chars_per_line:
+    a: 42  # Font A (reduced from 48 to prevent overflow)
+    b: 58  # Font B (reduced from 64 to prevent overflow)
+
+# Font style mapping for semantic usage
+# TM-T88IV only supports fonts 'a' and 'b'
+fonts:
+  sans: 'a'     # Default sans-serif → Font A (12x24 dots)
+  sans-b: 'b'   # Alternative sans font → Font B (9x17 dots)
+
+# Complex text rendering (rendered as image blocks)
+complex_text:
+  defaults:
+    max_width: 512
+    font_size: 28
+    line_spacing: 1.2
+    padding: 8
+    foreground: "black"
+    background: "white"
+
+  fonts:
+    sans:
+      regular: "fonts/Inter-Regular.ttf"
+      bold: "fonts/Inter-Bold.ttf"
+      italic: "fonts/Inter-Italic.ttf"
+      bold_italic: "fonts/Inter-BoldItalic.ttf"
+    sans-b:
+      regular: "fonts/Inter-Medium.ttf"
+      bold: "fonts/Inter-SemiBold.ttf"
+      italic: "fonts/Inter-MediumItalic.ttf"
+      bold_italic: "fonts/Inter-SemiBoldItalic.ttf"
+    serif:
+      regular: "fonts/NotoSerif-Regular.ttf"
+      bold: "fonts/NotoSerif-Bold.ttf"
+      italic: "fonts/NotoSerif-Italic.ttf"
+      bold_italic: "fonts/NotoSerif-BoldItalic.ttf"
+    monospace:
+      regular: "fonts/JetBrainsMono-Regular.ttf"
+      bold: "fonts/JetBrainsMono-Bold.ttf"
+      italic: "fonts/JetBrainsMono-Italic.ttf"
+      bold_italic: "fonts/JetBrainsMono-BoldItalic.ttf"
+
+# Text size presets (width/height multipliers)
+text_sizes:
+  h1:
+    width: 3
+    height: 3
+  h2:
+    width: 2
+    height: 2
+  h3:
+    width: 2
+    height: 1
+  normal:
+    width: 1
+    height: 1
+  small:
+    width: 1
+    height: 1
+
+# Image processing defaults
+image:
+  default_dither: 'floyd_steinberg'  # Options: floyd_steinberg, threshold, halftone
+  auto_resize: true
+  maintain_aspect_ratio: true
+  high_density: true  # Use high-density printing mode
+
+# USB connection parameters (for reference)
+usb:
+  vendor_id: 0x04b8
+  product_id: 0x0202
+  profile: "TM-T88IV"
