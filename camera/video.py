@@ -91,7 +91,7 @@ class VideoRecorder:
         width = int(self._cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = self._cap.get(cv2.CAP_PROP_FPS) or self._config.fps
-        fourcc = cv2.VideoWriter_fourcc(*self._config.video_codec)
+        fourcc = cv2.VideoWriter_fourcc(*self._config.video_codec)  # ty:ignore[unresolved-attribute] Potentially deprecated.
 
         with self._lock:
             self._writer = cv2.VideoWriter(str(dest), fourcc, fps, (width, height))
@@ -126,6 +126,7 @@ class VideoRecorder:
             return None
 
         self._stop_event.set()
+        assert self._thread is not None
         self._thread.join(timeout=timeout)
 
         with self._lock:

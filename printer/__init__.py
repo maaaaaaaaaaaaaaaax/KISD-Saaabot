@@ -7,7 +7,7 @@ utilities for creative and exhibition printing.
 
 Example usage:
     from pi_printer import Printer
-    
+
     with Printer() as p:
         p.print_heading("Hello World", level=1)
         p.print_text("Welcome to thermal printing!")
@@ -15,7 +15,7 @@ Example usage:
         p.cut()
 """
 
-__version__ = '0.1.0'
+__version__ = "0.1.0"
 
 from .printer import Printer
 from .config import Config
@@ -25,14 +25,14 @@ from .layout import Layout, ImageLayout
 from .complex_text import ComplexTextRenderer, ComplexTextSpan, ComplexTextBlockStyle
 
 __all__ = [
-    'Printer',
-    'Config',
-    'ImageProcessor',
-    'TextFormatter',
-    'TextStyle',
-    'Layout',
-    'ImageLayout',
-    'ComplexTextRenderer',
-    'ComplexTextSpan',
-    'ComplexTextBlockStyle',
+    "Printer",
+    "Config",
+    "ImageProcessor",
+    "TextFormatter",
+    "TextStyle",
+    "Layout",
+    "ImageLayout",
+    "ComplexTextRenderer",
+    "ComplexTextSpan",
+    "ComplexTextBlockStyle",
 ]

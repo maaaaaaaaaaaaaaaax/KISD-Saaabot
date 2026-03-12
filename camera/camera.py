@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import time
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
@@ -209,6 +208,7 @@ class Camera:
         """
         self._require_open()
         cap = self._cap
+        assert cap is not None
         return {
             "device_index": self._config.device_index,
             "backend": cap.getBackendName(),
@@ -223,10 +223,7 @@ class Camera:
 
     def __repr__(self) -> str:
         state = "open" if self.is_open else "closed"
-        return (
-            f"Camera(device={self._config.device_index}, "
-            f"state={state})"
-        )
+        return f"Camera(device={self._config.device_index}, state={state})"
 
     # ------------------------------------------------------------------
     # Static / class helpers

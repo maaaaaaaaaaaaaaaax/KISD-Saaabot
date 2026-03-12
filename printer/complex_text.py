@@ -7,15 +7,16 @@ through the existing image pipeline.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Literal, Optional, Sequence, Union
 import re
 
 from PIL import Image, ImageDraw, ImageFont
 
 
-FontFamily = Literal['sans', 'sans-b', 'serif', 'monospace']
-TextAlign = Literal['left', 'center', 'right']
+_AnyFont = ImageFont.FreeTypeFont | ImageFont.ImageFont
+
+FontFamily = Literal["sans", "sans-b", "serif", "monospace"]
+TextAlign = Literal["left", "center", "right"]
 
 
 @dataclass
@@ -23,7 +24,7 @@ class ComplexTextSpan:
     """A styled span inside a complex text block."""
 
     text: str
-    font_family: FontFamily = 'sans'
+    font_family: FontFamily = "sans"
     font_size: int = 28
     bold: bool = False
     italic: bool = False
@@ -36,25 +37,25 @@ class ComplexTextBlockStyle:
     """Block-level rendering options for complex text."""
 
     max_width: Optional[int] = None
-    align: TextAlign = 'left'
+    align: TextAlign = "left"
     line_spacing: float = 1.2
     padding: int = 8
-    foreground: str = 'black'
-    background: str = 'white'
+    foreground: str = "black"
+    background: str = "white"
 
 
 @dataclass
 class _Run:
     text: str
     span: ComplexTextSpan
-    font: ImageFont.ImageFont
+    font: _AnyFont
     width: int
 
 
 class ComplexTextRenderer:
     """Render complex text spans to PIL images."""
 
-    _token_splitter = re.compile(r'(\n|\s+)')
+    _token_splitter = re.compile(r"(\n|\s+)")
 
     def __init__(self, config=None):
         self.config = config
@@ -63,15 +64,16 @@ class ComplexTextRenderer:
         self,
         spans: Sequence[Union[ComplexTextSpan, dict[str, Any]]],
         style: Optional[ComplexTextBlockStyle] = None,
-        max_width: Optional[int] = None
+        max_width: Optional[int] = None,
     ) -> Image.Image:
         """Render spans into a printable image."""
         if not spans:
-            raise ValueError('At least one span is required')
+            raise ValueError("At least one span is required")
 
         block_style = self._resolve_block_style(style, max_width)
         normalized_spans = [self._coerce_span(item) for item in spans]
 
+        assert block_style.max_width is not None
         content_width = max(1, block_style.max_width - block_style.padding * 2)
         lines = self._layout_lines(normalized_spans, content_width)
 
@@ -86,13 +88,17 @@ class ComplexTextRenderer:
             y_cursor += int(round(line_height * block_style.line_spacing))
         total_height = max(1, bottom + block_style.padding)
 
-        image = Image.new('RGB', (block_style.max_width, total_height), block_style.background)
+        image = Image.new(
+            "RGB", (block_style.max_width, total_height), block_style.background
+        )
         draw = ImageDraw.Draw(image)
 
         y = block_style.padding
         for line, line_height in zip(lines, line_heights):
             line_width = sum(run.width for run in line)
-            x = self._line_start_x(block_style.align, block_style.padding, content_width, line_width)
+            x = self._line_start_x(
+                block_style.align, block_style.padding, content_width, line_width
+            )
 
             for run in line:
                 fg = block_style.foreground
@@ -107,7 +113,9 @@ class ComplexTextRenderer:
 
                 if run.span.underline and run.width > 0:
                     underline_y = y + line_height - 2
-                    draw.line((x, underline_y, x + run.width, underline_y), fill=fg, width=1)
+                    draw.line(
+                        (x, underline_y, x + run.width, underline_y), fill=fg, width=1
+                    )
 
                 x += run.width
 
@@ -116,14 +124,12 @@ class ComplexTextRenderer:
         return image
 
     def _resolve_block_style(
-        self,
-        style: Optional[ComplexTextBlockStyle],
-        max_width: Optional[int]
+        self, style: Optional[ComplexTextBlockStyle], max_width: Optional[int]
     ) -> ComplexTextBlockStyle:
         defaults = self.config.get_complex_text_defaults() if self.config else {}
 
         resolved = style or ComplexTextBlockStyle()
-        width_from_config = defaults.get('max_width')
+        width_from_config = defaults.get("max_width")
         width = max_width or resolved.max_width or width_from_config
 
         if width is None:
@@ -132,31 +138,37 @@ class ComplexTextRenderer:
         return ComplexTextBlockStyle(
             max_width=int(width),
             align=resolved.align,
-            line_spacing=resolved.line_spacing if resolved.line_spacing > 0 else defaults.get('line_spacing', 1.2),
+            line_spacing=resolved.line_spacing
+            if resolved.line_spacing > 0
+            else defaults.get("line_spacing", 1.2),
             padding=max(0, int(resolved.padding)),
-            foreground=resolved.foreground or defaults.get('foreground', 'black'),
-            background=resolved.background or defaults.get('background', 'white')
+            foreground=resolved.foreground or defaults.get("foreground", "black"),
+            background=resolved.background or defaults.get("background", "white"),
         )
 
-    def _coerce_span(self, span: Union[ComplexTextSpan, dict[str, Any]]) -> ComplexTextSpan:
+    def _coerce_span(
+        self, span: Union[ComplexTextSpan, dict[str, Any]]
+    ) -> ComplexTextSpan:
         if isinstance(span, ComplexTextSpan):
             return span
 
         if isinstance(span, dict):
-            text = str(span.get('text', ''))
+            text = str(span.get("text", ""))
             return ComplexTextSpan(
                 text=text,
-                font_family=span.get('font_family', 'sans'),
-                font_size=int(span.get('font_size', 28)),
-                bold=bool(span.get('bold', False)),
-                italic=bool(span.get('italic', False)),
-                underline=bool(span.get('underline', False)),
-                invert=bool(span.get('invert', False))
+                font_family=span.get("font_family", "sans"),
+                font_size=int(span.get("font_size", 28)),
+                bold=bool(span.get("bold", False)),
+                italic=bool(span.get("italic", False)),
+                underline=bool(span.get("underline", False)),
+                invert=bool(span.get("invert", False)),
             )
 
-        raise TypeError('Each span must be ComplexTextSpan or dict')
+        raise TypeError("Each span must be ComplexTextSpan or dict")
 
-    def _layout_lines(self, spans: Sequence[ComplexTextSpan], content_width: int) -> list[list[_Run]]:
+    def _layout_lines(
+        self, spans: Sequence[ComplexTextSpan], content_width: int
+    ) -> list[list[_Run]]:
         lines: list[list[_Run]] = [[]]
         current_width = 0
 
@@ -165,7 +177,7 @@ class ComplexTextRenderer:
             tokens = self._tokenize(span.text)
 
             for token in tokens:
-                if token == '\n':
+                if token == "\n":
                     lines.append([])
                     current_width = 0
                     continue
@@ -180,7 +192,7 @@ class ComplexTextRenderer:
                     current_width += token_width
                     continue
 
-                if token.strip() == '':
+                if token.strip() == "":
                     lines.append([])
                     current_width = 0
                     continue
@@ -211,12 +223,12 @@ class ComplexTextRenderer:
 
         return lines
 
-    def _break_token(self, token: str, font: ImageFont.ImageFont, max_width: int) -> list[str]:
+    def _break_token(self, token: str, font: _AnyFont, max_width: int) -> list[str]:
         if self._measure(token, font) <= max_width:
             return [token]
 
         chunks: list[str] = []
-        current = ''
+        current = ""
 
         for char in token:
             candidate = current + char
@@ -233,42 +245,48 @@ class ComplexTextRenderer:
 
     def _tokenize(self, text: str) -> list[str]:
         if not text:
-            return ['']
+            return [""]
 
         parts = self._token_splitter.split(text)
-        return [part for part in parts if part != '']
+        return [part for part in parts if part != ""]
 
     def _line_height(self, runs: list[_Run]) -> int:
         if not runs:
             return 16
         return max(self._font_line_height(run.font) for run in runs)
 
-    def _font_line_height(self, font: ImageFont.ImageFont) -> int:
-        bbox = font.getbbox('Ag')
-        return max(1, bbox[3] - bbox[1])
+    def _font_line_height(self, font: _AnyFont) -> int:
+        bbox = font.getbbox("Ag")
+        return max(1, int(bbox[3] - bbox[1]))
 
-    def _measure(self, text: str, font: ImageFont.ImageFont) -> int:
+    def _measure(self, text: str, font: _AnyFont) -> int:
         if not text:
             return 0
         bbox = font.getbbox(text)
-        return max(0, bbox[2] - bbox[0])
+        return max(0, int(bbox[2] - bbox[0]))
 
-    def _line_start_x(self, align: TextAlign, padding: int, content_width: int, line_width: int) -> int:
-        if align == 'center':
+    def _line_start_x(
+        self, align: TextAlign, padding: int, content_width: int, line_width: int
+    ) -> int:
+        if align == "center":
             return padding + max(0, (content_width - line_width) // 2)
-        if align == 'right':
+        if align == "right":
             return padding + max(0, content_width - line_width)
         return padding
 
-    def _load_font(self, span: ComplexTextSpan) -> ImageFont.ImageFont:
+    def _load_font(self, span: ComplexTextSpan) -> _AnyFont:
         variant = self._variant_name(span.bold, span.italic)
         size = max(8, int(span.font_size))
 
         font_path = None
         if self.config:
-            font_path = self.config.get_complex_text_font_path(span.font_family, variant)
-            if font_path is None and variant != 'regular':
-                font_path = self.config.get_complex_text_font_path(span.font_family, 'regular')
+            font_path = self.config.get_complex_text_font_path(
+                span.font_family, variant
+            )
+            if font_path is None and variant != "regular":
+                font_path = self.config.get_complex_text_font_path(
+                    span.font_family, "regular"
+                )
 
         if font_path:
             return ImageFont.truetype(str(font_path), size=size)
@@ -285,33 +303,33 @@ class ComplexTextRenderer:
 
     def _variant_name(self, bold: bool, italic: bool) -> str:
         if bold and italic:
-            return 'bold_italic'
+            return "bold_italic"
         if bold:
-            return 'bold'
+            return "bold"
         if italic:
-            return 'italic'
-        return 'regular'
+            return "italic"
+        return "regular"
 
     def _fallback_font_names(self, family: FontFamily, variant: str) -> list[str]:
         family_map: dict[FontFamily, list[str]] = {
-            'sans': ['DejaVuSans'],
-            'sans-b': ['DejaVuSansCondensed', 'DejaVuSans'],
-            'serif': ['DejaVuSerif'],
-            'monospace': ['DejaVuSansMono']
+            "sans": ["DejaVuSans"],
+            "sans-b": ["DejaVuSansCondensed", "DejaVuSans"],
+            "serif": ["DejaVuSerif"],
+            "monospace": ["DejaVuSansMono"],
         }
 
         suffix_map = {
-            'regular': ['.ttf'],
-            'bold': ['-Bold.ttf', '.ttf'],
-            'italic': ['-Oblique.ttf', '-Italic.ttf', '.ttf'],
-            'bold_italic': ['-BoldOblique.ttf', '-BoldItalic.ttf', '.ttf']
+            "regular": [".ttf"],
+            "bold": ["-Bold.ttf", ".ttf"],
+            "italic": ["-Oblique.ttf", "-Italic.ttf", ".ttf"],
+            "bold_italic": ["-BoldOblique.ttf", "-BoldItalic.ttf", ".ttf"],
         }
 
         names: list[str] = []
-        for base in family_map.get(family, ['DejaVuSans']):
-            for suffix in suffix_map.get(variant, ['.ttf']):
-                if suffix == '.ttf':
-                    names.append(f'{base}.ttf')
+        for base in family_map.get(family, ["DejaVuSans"]):
+            for suffix in suffix_map.get(variant, [".ttf"]):
+                if suffix == ".ttf":
+                    names.append(f"{base}.ttf")
                 else:
-                    names.append(f'{base}{suffix}')
+                    names.append(f"{base}{suffix}")
         return names

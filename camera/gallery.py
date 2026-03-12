@@ -129,16 +129,16 @@ _PAGE = """\
 </html>
 """
 
-_CRUMB_ITEM  = '<a href="{href}">{label}</a><span>›</span>'
+_CRUMB_ITEM = '<a href="{href}">{label}</a><span>›</span>'
 _SUBDIR_ITEM = '<a href="{href}">📁 {label}/</a>'
-_IMG_CARD    = """\
+_IMG_CARD = """\
 <div class="card">
   <a href="{file_url}" target="_blank">
     <img src="{file_url}" alt="{name}" loading="lazy"/>
   </a>
   <div class="label">{name}</div>
 </div>"""
-_VID_CARD    = """\
+_VID_CARD = """\
 <div class="card">
   <a href="{file_url}" target="_blank">
     <video src="{file_url}" muted playsinline
@@ -150,6 +150,7 @@ _VID_CARD    = """\
 
 
 # ── LAN IP helper ─────────────────────────────────────────────────────────────
+
 
 def _lan_ip() -> str:
     """Return the machine's LAN IP, falling back to localhost."""
@@ -163,12 +164,13 @@ def _lan_ip() -> str:
 
 # ── Request handler ───────────────────────────────────────────────────────────
 
+
 class _GalleryHandler(BaseHTTPRequestHandler):
     """Serves gallery HTML for directories; raw files for media."""
 
     root: Path  # set by GalleryServer before binding
 
-    def log_message(self, fmt, *args):  # silence default stdio logging
+    def log_message(self, fmt, *args):  # ty:ignore[invalid-method-override] as this overwrites the default logging to stderr
         pass
 
     def do_GET(self):
@@ -195,10 +197,10 @@ class _GalleryHandler(BaseHTTPRequestHandler):
         entries = sorted(directory.iterdir(), key=lambda p: (p.is_file(), p.name))
 
         subdirs = [e for e in entries if e.is_dir()]
-        media   = [e for e in entries if e.is_file() and e.suffix.lower() in MEDIA_EXTS]
+        media = [e for e in entries if e.is_file() and e.suffix.lower() in MEDIA_EXTS]
 
         # breadcrumb
-        parts  = [p for p in rel.split("/") if p]
+        parts = [p for p in rel.split("/") if p]
         crumbs = ['<a href="/">captures</a>']
         for i, part in enumerate(parts):
             href = "/" + "/".join(parts[: i + 1])
@@ -224,7 +226,7 @@ class _GalleryHandler(BaseHTTPRequestHandler):
             cards = []
             for f in media:
                 file_url = ("/" + rel + "/" + f.name).replace("//", "/")
-                name     = html.escape(f.name)
+                name = html.escape(f.name)
                 if f.suffix.lower() in VIDEO_EXTS:
                     cards.append(_VID_CARD.format(file_url=file_url, name=name))
                 else:
@@ -234,7 +236,7 @@ class _GalleryHandler(BaseHTTPRequestHandler):
             content = '<p class="empty">No images or videos here yet.</p>'
 
         title = parts[-1] if parts else "/"
-        body  = _PAGE.format(
+        body = _PAGE.format(
             title=html.escape(title),
             breadcrumb=breadcrumb,
             subdirs=sd_html,
@@ -259,13 +261,13 @@ class _GalleryHandler(BaseHTTPRequestHandler):
                 byte_range = range_header.strip().replace("bytes=", "")
                 start_str, _, end_str = byte_range.partition("-")
                 start = int(start_str) if start_str else 0
-                end   = int(end_str)   if end_str   else size - 1
+                end = int(end_str) if end_str else size - 1
             except ValueError:
                 self._send_error(416, "Requested Range Not Satisfiable")
                 return
 
             start = max(0, start)
-            end   = min(end, size - 1)
+            end = min(end, size - 1)
             length = end - start + 1
 
             self.send_response(206)
@@ -317,6 +319,7 @@ class _GalleryHandler(BaseHTTPRequestHandler):
 
 # ── Public API ────────────────────────────────────────────────────────────────
 
+
 class GalleryServer:
     """
     Lightweight HTTP gallery server for a captures directory.
@@ -347,6 +350,7 @@ class GalleryServer:
     def serve(self):
         """Start a blocking server (Ctrl-C to stop)."""
         self._make_server()
+        assert self._server is not None
         print(f"  Gallery → {self.url}  (Ctrl-C to stop)")
         try:
             self._server.serve_forever()
@@ -362,6 +366,7 @@ class GalleryServer:
         if self._thread and self._thread.is_alive():
             return
         self._make_server()
+        assert self._server is not None
         self._thread = threading.Thread(
             target=self._server.serve_forever,
             daemon=True,

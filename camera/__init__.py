@@ -37,7 +37,7 @@ Example usage::
     print(Camera.list_devices())
 """
 
-__version__ = '0.1.0'
+__version__ = "0.1.0"
 
 from .camera import Camera
 from .config import CameraConfig
@@ -46,9 +46,9 @@ from .video import VideoRecorder
 from .gallery import GalleryServer
 
 __all__ = [
-    'Camera',
-    'CameraConfig',
-    'ImageCapture',
-    'VideoRecorder',
-    'GalleryServer',
+    "Camera",
+    "CameraConfig",
+    "ImageCapture",
+    "VideoRecorder",
+    "GalleryServer",
 ]
