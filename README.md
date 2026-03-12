@@ -1,4 +1,4 @@
-# sabot
+# sabots
 
 High-level Python control system for an EPSON TM-T88IV thermal printer and a USB camera, built for exhibition and installation contexts. Requires Python 3.13+.
 
