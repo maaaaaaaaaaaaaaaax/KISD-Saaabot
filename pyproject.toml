@@ -1,7 +1,7 @@
 [project]
-name = "pi-printer"
+name = "sabot"
 version = "0.1.0"
-description = "High-level wrapper for thermal receipt printers with image processing, text formatting, and layout utilities"
+description = "**SABOT**"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
@@ -14,7 +14,7 @@ dependencies = [
 authors = [
     { name = "M. Schmalenbach" }
 ]
-keywords = ["thermal-printer", "receipt-printer", "escpos", "epson", "printing"]
+keywords = ["sabot"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",
@@ -24,19 +24,22 @@ classifiers = [
     "Programming Language :: Python :: 3.13",
 ]
 
-[project.urls]
-Homepage = "https://github.com/mschmalenbach/pi-printer"
-Repository = "https://github.com/mschmalenbach/pi-printer"
-
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["pi_printer", "camera"]
+packages = ["printer", "camera"]
 
 [dependency-groups]
 dev = [
     "ruff>=0.15.5",
     "ty>=0.0.21",
 ]
+
+[tool.ruff]
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+ignore = []
