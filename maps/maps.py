@@ -1,5 +1,8 @@
 """Maps module facade."""
 
+from PIL import Image
+
+from .aerial import Aerial
 from .config import MapsConfig
 from .route import Route, RoutePlanner
 from .streetview import StreetView
@@ -19,6 +22,7 @@ class Maps:
         self._config = config or MapsConfig()
         self._route_planner = RoutePlanner(self._config)
         self._streetview = StreetView(self._config)
+        self._aerial = Aerial(self._config)
 
     def __enter__(self) -> "Maps":
         return self
@@ -36,10 +40,19 @@ class Maps:
         """Access the street view fetcher directly."""
         return self._streetview
 
+    @property
+    def aerial(self) -> Aerial:
+        """Access the aerial image fetcher directly."""
+        return self._aerial
+
     def plan(self, origin: str, destination: str) -> Route:
         """Plan a route between two locations."""
         return self._route_planner.plan(origin, destination)
 
     def fetch_route(self, route: Route):
-        """Fetch Street View images for a route. Delegates to StreetView.fetch_route."""
+        """Fetch Street View images for a route."""
         return self._streetview.fetch_route(route)
+
+    def fetch_aerial(self, lat: float, lng: float) -> Image.Image:
+        """Fetch an aerial image for a coordinate."""
+        return self._aerial.fetch(lat, lng)

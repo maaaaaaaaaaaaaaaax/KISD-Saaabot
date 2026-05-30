@@ -25,4 +25,9 @@ with Maps(config) as m:
             print("  ... (stopping after 20 images)")
             break
 
+    # Fetch an aerial image at the last coordinate
+    last_coord = route.coordinates[-1]
+    aerial = m.fetch_aerial(last_coord[0], last_coord[1])
+    print(f"\n  Aerial at {last_coord[0]:.5f},{last_coord[1]:.5f} size={aerial.size}")
+
 print("Done!")
