@@ -28,6 +28,11 @@ class MapsConfig:
     def __post_init__(self) -> None:
         if not self.api_key:
             self.api_key = os.environ.get("GOOGLE_MAPS_API_KEY", "")
+        if not self.api_key:
+            raise ValueError(
+                "Missing API key. Set GOOGLE_MAPS_API_KEY in your "
+                "environment or pass api_key to MapsConfig."
+            )
         self.cache_dir = Path(self.cache_dir)
         if self.fov < 1 or self.fov > 120:
             raise ValueError(f"fov must be 1-120, got {self.fov}")
