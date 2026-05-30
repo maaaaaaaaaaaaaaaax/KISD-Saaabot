@@ -7,6 +7,10 @@ High-level Python control system for an EPSON TM-T88IV thermal printer and a USB
 - [`printer/`](printer/README.md) — thermal printer control: text, images, layout, and complex styled spans
 - [`camera/`](camera/README.md) — USB camera capture, video recording, and a local gallery server
 
+## Remember
+
+Google Maps API has been limited for my macs ip, also add raspi ip!
+
 ## Installation
 
 ```bash
