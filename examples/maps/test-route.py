@@ -2,9 +2,10 @@
 
 from dotenv import load_dotenv
 
+from maps import Maps, MapsConfig
+
 load_dotenv()
 
-from maps import Maps, MapsConfig
 
 config = MapsConfig(step_interval_m=100.0)
 print(f"API key loaded: {'yes' if config.api_key else 'NO'}")
