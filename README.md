@@ -39,6 +39,10 @@ uv run ty check
 uv run ruff format . && uv run ruff check . && uv run ty check
 ```
 
+## Run Maps locally
+
+`uv run python examples/maps/test-route.py`
+
 ## Quick Start
 
 ```python
