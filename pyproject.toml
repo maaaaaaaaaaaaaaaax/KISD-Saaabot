@@ -12,6 +12,7 @@ dependencies = [
     "opencv-python-headless>=4.8",
     "googlemaps>=4.10",
     "polyline>=2.0",
+    "python-dotenv>=1.2.2",
 ]
 authors = [{ name = "M. Schmalenbach" }]
 keywords = ["sabot"]

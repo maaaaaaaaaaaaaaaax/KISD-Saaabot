@@ -19,9 +19,9 @@ class MapsConfig:
     """
 
     api_key: str = ""
-    step_interval_m: float = 20.0
-    image_size: tuple[int, int] = (640, 640)
-    fov: int = 90
+    step_interval_m: float = 100.0
+    image_size: tuple[int, int] = (1040, 1040)
+    fov: int = 60
     pitch: int = 0
     cache_dir: Path = field(default_factory=lambda: Path.cwd() / "maps" / "cache")
 
