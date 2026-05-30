@@ -1,8 +1,8 @@
 """Text formatting utilities for thermal receipt printers."""
 
-from dataclasses import dataclass
-from typing import Literal, Optional
 import textwrap
+from dataclasses import dataclass
+from typing import Literal
 
 
 @dataclass
@@ -94,7 +94,7 @@ class TextFormatter:
         self._style.underline = mode
         return self
 
-    def size(self, width: int, height: Optional[int] = None) -> "TextFormatter":
+    def size(self, width: int, height: int | None = None) -> "TextFormatter":
         """
         Set text size multipliers.
 

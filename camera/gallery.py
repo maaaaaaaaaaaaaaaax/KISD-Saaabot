@@ -32,7 +32,6 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 from pathlib import Path
 from urllib.parse import unquote
 
-
 # ── MIME helpers ──────────────────────────────────────────────────────────────
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"}
@@ -385,7 +384,7 @@ class GalleryServer:
 
     # ── context manager ───────────────────────────────────────────────────────
 
-    def __enter__(self) -> "GalleryServer":
+    def __enter__(self) -> GalleryServer:
         self.start()
         return self
 

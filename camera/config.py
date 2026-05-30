@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional, Tuple
 
 
 @dataclass
@@ -24,7 +23,7 @@ class CameraConfig:
     """
 
     device_index: int = 0
-    resolution: Optional[Tuple[int, int]] = None  # e.g. (1920, 1080)
+    resolution: tuple[int, int] | None = None  # e.g. (1920, 1080)
     fps: float = 30.0
     output_dir: Path = field(default_factory=lambda: Path.cwd() / "captures")
     image_format: str = "jpg"

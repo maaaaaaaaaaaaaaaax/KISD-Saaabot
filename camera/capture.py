@@ -5,7 +5,7 @@ from __future__ import annotations
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional, Union
+from typing import TYPE_CHECKING
 
 import cv2
 from PIL import Image
@@ -36,7 +36,7 @@ class ImageCapture:
             img.save("photo.jpg")
     """
 
-    def __init__(self, cap: cv2.VideoCapture, config: "CameraConfig") -> None:
+    def __init__(self, cap: cv2.VideoCapture, config: CameraConfig) -> None:
         self._cap = cap
         self._config = config
 
@@ -46,7 +46,7 @@ class ImageCapture:
 
     def snap(
         self,
-        path: Optional[Union[str, Path]] = None,
+        path: str | Path | None = None,
         *,
         as_pil: bool = True,
     ) -> Image.Image:
@@ -84,7 +84,7 @@ class ImageCapture:
 
     def snap_to_dir(
         self,
-        directory: Optional[Union[str, Path]] = None,
+        directory: str | Path | None = None,
         stem: str = "capture",
     ) -> Path:
         """
@@ -92,7 +92,8 @@ class ImageCapture:
 
         Args:
             directory: Target directory. Defaults to ``config.output_dir``.
-            stem: Filename prefix, e.g. ``"capture"`` → ``"capture_20260312_143201.jpg"``.
+            stem: Filename prefix, e.g. ``"capture"``
+                → ``"capture_20260312_143201.jpg"``.
 
         Returns:
             :class:`pathlib.Path` of the saved file.
@@ -115,9 +116,9 @@ class ImageCapture:
         self,
         count: int,
         interval: float = 0.0,
-        directory: Optional[Union[str, Path]] = None,
+        directory: str | Path | None = None,
         stem: str = "burst",
-    ) -> List[Path]:
+    ) -> list[Path]:
         """
         Capture *count* frames in quick succession.
 
@@ -136,7 +137,7 @@ class ImageCapture:
         out_dir = Path(directory) if directory else self._config.output_dir
         out_dir.mkdir(parents=True, exist_ok=True)
 
-        paths: List[Path] = []
+        paths: list[Path] = []
         base_ts = datetime.now().strftime("%Y%m%d_%H%M%S")
 
         for i in range(count):
@@ -155,7 +156,7 @@ class ImageCapture:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _save(self, img: Image.Image, path: Union[str, Path]) -> Path:
+    def _save(self, img: Image.Image, path: str | Path) -> Path:
         dest = Path(path)
         if not dest.suffix:
             dest = dest.with_suffix(f".{self._config.image_format}")

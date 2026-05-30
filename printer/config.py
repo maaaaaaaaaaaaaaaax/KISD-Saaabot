@@ -1,19 +1,21 @@
 """Configuration management for receipt printer profiles."""
 
 from pathlib import Path
-from typing import Dict, Any, Optional, Union
+from typing import Any
+
 import yaml
 
 
 class Config:
     """Loads and provides access to printer configuration from YAML profiles."""
 
-    def __init__(self, profile_path: Union[str, Path, None] = None):
+    def __init__(self, profile_path: str | Path | None = None):
         """
         Initialize configuration from a YAML profile.
 
         Args:
-            profile_path: Path to YAML profile file. If None, uses default TM-T88IV profile.
+            profile_path: Path to YAML profile file.
+                If None, uses default TM-T88IV profile.
         """
         if profile_path is None:
             # Use default TM-T88IV profile
@@ -23,12 +25,12 @@ class Config:
             self.profile_path = Path(profile_path)
         self._config = self._load_config()
 
-    def _load_config(self) -> Dict[str, Any]:
+    def _load_config(self) -> dict[str, Any]:
         """Load YAML configuration file."""
         if not self.profile_path.exists():
             raise FileNotFoundError(f"Profile not found: {self.profile_path}")
 
-        with open(self.profile_path, "r") as f:
+        with open(self.profile_path) as f:
             config = yaml.safe_load(f)
 
         # Validate required sections
@@ -61,7 +63,7 @@ class Config:
         return self._config["printer"]["max_image_width_px"]
 
     @property
-    def chars_per_line(self) -> Dict[str, int]:
+    def chars_per_line(self) -> dict[str, int]:
         """Get characters per line for each font."""
         return self._config["printer"]["chars_per_line"]
 
@@ -94,17 +96,17 @@ class Config:
 
     # Complex text rendering settings
     @property
-    def complex_text(self) -> Dict[str, Any]:
+    def complex_text(self) -> dict[str, Any]:
         """Get complex text rendering configuration."""
         return self._config.get("complex_text", {})
 
-    def get_complex_text_defaults(self) -> Dict[str, Any]:
+    def get_complex_text_defaults(self) -> dict[str, Any]:
         """Get default block settings for complex text rendering."""
         return self.complex_text.get("defaults", {})
 
     def get_complex_text_font_path(
         self, family: str, variant: str = "regular"
-    ) -> Optional[Path]:
+    ) -> Path | None:
         """
         Resolve font file path for complex text rendering.
 
@@ -137,7 +139,7 @@ class Config:
         return None
 
     # Text size presets
-    def get_text_size(self, preset: str) -> Dict[str, int]:
+    def get_text_size(self, preset: str) -> dict[str, int]:
         """
         Get width/height multipliers for a text size preset.
 

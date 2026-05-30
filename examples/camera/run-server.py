@@ -2,8 +2,8 @@ from pathlib import Path
 
 from camera import GalleryServer
 
-
 OUTPUT_DIR = Path("captures/camera_test")
+
 
 def main():
     # ── Gallery ───────────────────────────────────────────────────────────────

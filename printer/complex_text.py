@@ -6,12 +6,12 @@ through the existing image pipeline.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-from typing import Any, Literal, Optional, Sequence, Union
 import re
+from collections.abc import Sequence
+from dataclasses import dataclass
+from typing import Any, Literal
 
 from PIL import Image, ImageDraw, ImageFont
-
 
 _AnyFont = ImageFont.FreeTypeFont | ImageFont.ImageFont
 
@@ -36,7 +36,7 @@ class ComplexTextSpan:
 class ComplexTextBlockStyle:
     """Block-level rendering options for complex text."""
 
-    max_width: Optional[int] = None
+    max_width: int | None = None
     align: TextAlign = "left"
     line_spacing: float = 1.2
     padding: int = 8
@@ -62,9 +62,9 @@ class ComplexTextRenderer:
 
     def render(
         self,
-        spans: Sequence[Union[ComplexTextSpan, dict[str, Any]]],
-        style: Optional[ComplexTextBlockStyle] = None,
-        max_width: Optional[int] = None,
+        spans: Sequence[ComplexTextSpan | dict[str, Any]],
+        style: ComplexTextBlockStyle | None = None,
+        max_width: int | None = None,
     ) -> Image.Image:
         """Render spans into a printable image."""
         if not spans:
@@ -124,7 +124,7 @@ class ComplexTextRenderer:
         return image
 
     def _resolve_block_style(
-        self, style: Optional[ComplexTextBlockStyle], max_width: Optional[int]
+        self, style: ComplexTextBlockStyle | None, max_width: int | None
     ) -> ComplexTextBlockStyle:
         defaults = self.config.get_complex_text_defaults() if self.config else {}
 
@@ -146,9 +146,7 @@ class ComplexTextRenderer:
             background=resolved.background or defaults.get("background", "white"),
         )
 
-    def _coerce_span(
-        self, span: Union[ComplexTextSpan, dict[str, Any]]
-    ) -> ComplexTextSpan:
+    def _coerce_span(self, span: ComplexTextSpan | dict[str, Any]) -> ComplexTextSpan:
         if isinstance(span, ComplexTextSpan):
             return span
 

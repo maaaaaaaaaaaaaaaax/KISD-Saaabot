@@ -17,12 +17,12 @@ Example usage:
 
 __version__ = "0.1.0"
 
-from .printer import Printer
+from .complex_text import ComplexTextBlockStyle, ComplexTextRenderer, ComplexTextSpan
 from .config import Config
 from .image import ImageProcessor
+from .layout import ImageLayout, Layout
+from .printer import Printer
 from .text import TextFormatter, TextStyle
-from .layout import Layout, ImageLayout
-from .complex_text import ComplexTextRenderer, ComplexTextSpan, ComplexTextBlockStyle
 
 __all__ = [
     "Printer",

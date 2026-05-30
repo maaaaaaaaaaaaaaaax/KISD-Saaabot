@@ -3,9 +3,10 @@
 import base64
 import io
 from pathlib import Path
-from typing import Union, Optional, Literal
-from PIL import Image
+from typing import Literal
+
 import requests
+from PIL import Image
 
 
 class ImageProcessor:
@@ -20,7 +21,7 @@ class ImageProcessor:
         """
         self.max_width = max_width
 
-    def load_image(self, source: Union[str, Path, Image.Image]) -> Image.Image:
+    def load_image(self, source: str | Path | Image.Image) -> Image.Image:
         """
         Load an image from various sources.
 
@@ -28,7 +29,8 @@ class ImageProcessor:
             source: Can be:
                 - Local file path (str or Path)
                 - URL (str starting with 'http://' or 'https://')
-                - Base64 string (str starting with 'data:image/' or just the base64 data)
+                - Base64 string (str starting with 'data:image/'
+                  or just the base64 data)
                 - PIL Image object (returned as-is)
 
         Returns:
@@ -93,8 +95,8 @@ class ImageProcessor:
     def resize(
         self,
         image: Image.Image,
-        target_width: Optional[int] = None,
-        target_height: Optional[int] = None,
+        target_width: int | None = None,
+        target_height: int | None = None,
         maintain_aspect: bool = True,
     ) -> Image.Image:
         """
@@ -168,7 +170,7 @@ class ImageProcessor:
         self,
         image: Image.Image,
         alignment: Literal["left", "center", "right"] = "left",
-        canvas_width: Optional[int] = None,
+        canvas_width: int | None = None,
     ) -> Image.Image:
         """
         Add horizontal padding to align image on canvas.
@@ -207,7 +209,7 @@ class ImageProcessor:
         image1: Image.Image,
         image2: Image.Image,
         spacing: int = 10,
-        max_width: Optional[int] = None,
+        max_width: int | None = None,
     ) -> Image.Image:
         """
         Combine two images side by side.
@@ -250,8 +252,8 @@ class ImageProcessor:
 
     def prepare_for_print(
         self,
-        source: Union[str, Path, Image.Image],
-        max_width: Optional[int] = None,
+        source: str | Path | Image.Image,
+        max_width: int | None = None,
         rotation: float = 0,
         alignment: Literal["left", "center", "right"] = "left",
         maintain_aspect: bool = True,

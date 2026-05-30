@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Dict, List, Optional, Union
 
 import cv2
 from PIL import Image
@@ -42,11 +41,11 @@ class Camera:
         cam.close()
     """
 
-    def __init__(self, config: Optional[CameraConfig] = None) -> None:
+    def __init__(self, config: CameraConfig | None = None) -> None:
         self._config = config or CameraConfig()
-        self._cap: Optional[cv2.VideoCapture] = None
-        self._capture: Optional[ImageCapture] = None
-        self._recorder: Optional[VideoRecorder] = None
+        self._cap: cv2.VideoCapture | None = None
+        self._capture: ImageCapture | None = None
+        self._recorder: VideoRecorder | None = None
 
     # ------------------------------------------------------------------
     # Properties
@@ -78,7 +77,7 @@ class Camera:
     # Lifecycle
     # ------------------------------------------------------------------
 
-    def open(self) -> "Camera":
+    def open(self) -> Camera:
         """
         Open the camera device.
 
@@ -136,7 +135,7 @@ class Camera:
     # Context manager
     # ------------------------------------------------------------------
 
-    def __enter__(self) -> "Camera":
+    def __enter__(self) -> Camera:
         self.open()
         return self
 
@@ -149,7 +148,7 @@ class Camera:
 
     def snap(
         self,
-        path: Optional[Union[str, Path]] = None,
+        path: str | Path | None = None,
     ) -> Image.Image:
         """
         Capture a single still image.
@@ -160,7 +159,7 @@ class Camera:
 
     def snap_to_dir(
         self,
-        directory: Optional[Union[str, Path]] = None,
+        directory: str | Path | None = None,
         stem: str = "capture",
     ) -> Path:
         """
@@ -174,9 +173,9 @@ class Camera:
         self,
         count: int,
         interval: float = 0.0,
-        directory: Optional[Union[str, Path]] = None,
+        directory: str | Path | None = None,
         stem: str = "burst",
-    ) -> List[Path]:
+    ) -> list[Path]:
         """
         Capture *count* still images in quick succession.
 
@@ -187,7 +186,7 @@ class Camera:
     def record_for(
         self,
         seconds: float,
-        path: Optional[Union[str, Path]] = None,
+        path: str | Path | None = None,
     ) -> Path:
         """
         Record video for *seconds* (blocking).
@@ -200,7 +199,7 @@ class Camera:
     # Device info
     # ------------------------------------------------------------------
 
-    def info(self) -> Dict[str, object]:
+    def info(self) -> dict[str, object]:
         """
         Return a dict of current camera properties.
 
@@ -230,7 +229,7 @@ class Camera:
     # ------------------------------------------------------------------
 
     @staticmethod
-    def list_devices(max_index: int = 8) -> List[int]:
+    def list_devices(max_index: int = 8) -> list[int]:
         """
         Probe device indices 0–*max_index* and return those that open.
 
@@ -242,7 +241,7 @@ class Camera:
         Returns:
             List of working device indices, e.g. ``[0, 2]``.
         """
-        found: List[int] = []
+        found: list[int] = []
         for idx in range(max_index):
             cap = cv2.VideoCapture(idx)
             if cap.isOpened():

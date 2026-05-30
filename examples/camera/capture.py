@@ -2,7 +2,6 @@ from pathlib import Path
 
 from camera import Camera, CameraConfig, GalleryServer
 
-
 OUTPUT_DIR = Path("captures/camera_test")
 
 

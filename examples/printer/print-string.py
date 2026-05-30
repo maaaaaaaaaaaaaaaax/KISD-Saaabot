@@ -11,7 +11,9 @@ Usage:
     # Pass as a command-line argument:
     python print_input.py "Hello, world!"
 """
+
 import sys
+
 from printer import Printer
 
 
@@ -22,8 +24,10 @@ def main():
 
     # 2. Otherwise read from stdin (paste / pipe)
     else:
-        print("Paste your text, then press Ctrl+D (Linux/Mac) or Ctrl+Z Enter (Windows):",
-              file=sys.stderr)
+        print(
+            "Paste your text, then press Ctrl+D (Linux/Mac) or Ctrl+Z Enter (Windows):",
+            file=sys.stderr,
+        )
         text = sys.stdin.read()
 
     text = text.strip()

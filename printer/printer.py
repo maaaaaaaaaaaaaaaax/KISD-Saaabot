@@ -1,15 +1,17 @@
 """High-level printer facade for thermal receipt printers."""
 
-from typing import Union, Optional, Literal, Sequence
+from collections.abc import Sequence
 from pathlib import Path
+from typing import Literal
+
 from escpos import printer
 from PIL import Image
 
+from .complex_text import ComplexTextBlockStyle, ComplexTextRenderer, ComplexTextSpan
 from .config import Config
 from .image import ImageProcessor
+from .layout import ImageLayout, Layout
 from .text import TextFormatter, TextStyle
-from .layout import Layout, ImageLayout
-from .complex_text import ComplexTextRenderer, ComplexTextBlockStyle, ComplexTextSpan
 
 
 class Printer:
@@ -26,10 +28,10 @@ class Printer:
 
     def __init__(
         self,
-        config_path: Optional[str] = None,
-        vendor_id: Optional[int] = None,
-        product_id: Optional[int] = None,
-        profile: Optional[str] = None,
+        config_path: str | None = None,
+        vendor_id: int | None = None,
+        product_id: int | None = None,
+        profile: str | None = None,
     ):
         """
         Initialize printer with configuration.
@@ -95,9 +97,7 @@ class Printer:
 
     # Text output methods
 
-    def text(
-        self, content: str, style: Optional[Union[TextStyle, str]] = None
-    ) -> "Printer":
+    def text(self, content: str, style: TextStyle | str | None = None) -> "Printer":
         """
         Print text with optional formatting.
 
@@ -131,7 +131,7 @@ class Printer:
         return self
 
     def print_text(
-        self, content: str, style: Optional[Union[TextStyle, str]] = None
+        self, content: str, style: TextStyle | str | None = None
     ) -> "Printer":
         """
         Print text with newline.
@@ -184,11 +184,11 @@ class Printer:
 
     def print_complex_text(
         self,
-        spans: Sequence[Union[ComplexTextSpan, dict]],
-        style: Optional[ComplexTextBlockStyle] = None,
-        width: Optional[int] = None,
+        spans: Sequence[ComplexTextSpan | dict],
+        style: ComplexTextBlockStyle | None = None,
+        width: int | None = None,
         alignment: Literal["left", "center", "right"] = "left",
-        high_density: Optional[bool] = None,
+        high_density: bool | None = None,
     ) -> "Printer":
         """
         Render styled span text as an image block and print it.
@@ -251,11 +251,11 @@ class Printer:
 
     def print_image(
         self,
-        source: Union[str, Path, Image.Image],
-        width: Optional[int] = None,
+        source: str | Path | Image.Image,
+        width: int | None = None,
         rotation: float = 0,
         alignment: Literal["left", "center", "right"] = "left",
-        high_density: Optional[bool] = None,
+        high_density: bool | None = None,
     ) -> "Printer":
         """
         Print image with preprocessing.
@@ -265,7 +265,8 @@ class Printer:
             width: Target width in pixels (default: max width from config)
             rotation: Rotation angle in degrees
             alignment: Horizontal alignment
-            high_density: Use high-density mode for both vertical and horizontal (default: from config)
+            high_density: Use high-density mode for both vertical
+                and horizontal (default: from config)
 
         Returns:
             Self for chaining
@@ -321,7 +322,7 @@ class Printer:
     # Layout methods
 
     def print_separator(
-        self, char: str = "-", rows: int = 2, width: Optional[int] = None
+        self, char: str = "-", rows: int = 2, width: int | None = None
     ) -> "Printer":
         """
         Print a separator line.

@@ -40,10 +40,10 @@ Example usage::
 __version__ = "0.1.0"
 
 from .camera import Camera
-from .config import CameraConfig
 from .capture import ImageCapture
-from .video import VideoRecorder
+from .config import CameraConfig
 from .gallery import GalleryServer
+from .video import VideoRecorder
 
 __all__ = [
     "Camera",

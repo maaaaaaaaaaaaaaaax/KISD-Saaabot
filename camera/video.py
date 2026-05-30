@@ -6,7 +6,7 @@ import threading
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING
 
 import cv2
 
@@ -34,14 +34,14 @@ class VideoRecorder:
                 time.sleep(10)   # record for 10 s
     """
 
-    def __init__(self, cap: cv2.VideoCapture, config: "CameraConfig") -> None:
+    def __init__(self, cap: cv2.VideoCapture, config: CameraConfig) -> None:
         self._cap = cap
         self._config = config
 
-        self._writer: Optional[cv2.VideoWriter] = None
-        self._thread: Optional[threading.Thread] = None
+        self._writer: cv2.VideoWriter | None = None
+        self._thread: threading.Thread | None = None
         self._stop_event = threading.Event()
-        self._current_path: Optional[Path] = None
+        self._current_path: Path | None = None
         self._lock = threading.Lock()
 
     # ------------------------------------------------------------------
@@ -54,15 +54,15 @@ class VideoRecorder:
         return self._thread is not None and self._thread.is_alive()
 
     @property
-    def current_path(self) -> Optional[Path]:
+    def current_path(self) -> Path | None:
         """Path of the file currently being written, or ``None``."""
         return self._current_path
 
     def start(
         self,
-        path: Optional[Union[str, Path]] = None,
+        path: str | Path | None = None,
         *,
-        duration: Optional[float] = None,
+        duration: float | None = None,
     ) -> Path:
         """
         Start recording to *path* (or an auto-named file).
@@ -112,7 +112,7 @@ class VideoRecorder:
         self._thread.start()
         return dest
 
-    def stop(self, timeout: float = 5.0) -> Optional[Path]:
+    def stop(self, timeout: float = 5.0) -> Path | None:
         """
         Stop an in-progress recording.
 
@@ -140,10 +140,10 @@ class VideoRecorder:
 
     def record(
         self,
-        path: Optional[Union[str, Path]] = None,
+        path: str | Path | None = None,
         *,
-        duration: Optional[float] = None,
-    ) -> "_RecordingContext":
+        duration: float | None = None,
+    ) -> _RecordingContext:
         """
         Context manager that starts recording on entry and stops on exit.
 
@@ -157,7 +157,7 @@ class VideoRecorder:
     def record_for(
         self,
         seconds: float,
-        path: Optional[Union[str, Path]] = None,
+        path: str | Path | None = None,
     ) -> Path:
         """
         Blocking convenience: record for exactly *seconds* and return the path.
@@ -181,7 +181,7 @@ class VideoRecorder:
     # Internal helpers
     # ------------------------------------------------------------------
 
-    def _record_loop(self, duration: Optional[float]) -> None:
+    def _record_loop(self, duration: float | None) -> None:
         """Background thread: read frames and write them until stopped."""
         start = time.monotonic()
         while not self._stop_event.is_set():
@@ -198,7 +198,7 @@ class VideoRecorder:
 
         self._stop_event.set()  # signal that we finished naturally
 
-    def _resolve_path(self, path: Optional[Union[str, Path]]) -> Path:
+    def _resolve_path(self, path: str | Path | None) -> Path:
         if path is None:
             out_dir = self._config.output_dir
             filename = f"video_{_ts()}.{self._config.video_format}"
@@ -215,14 +215,14 @@ class _RecordingContext:
     def __init__(
         self,
         recorder: VideoRecorder,
-        path: Optional[Union[str, Path]],
+        path: str | Path | None,
         *,
-        duration: Optional[float],
+        duration: float | None,
     ) -> None:
         self._recorder = recorder
         self._path = path
         self._duration = duration
-        self._dest: Optional[Path] = None
+        self._dest: Path | None = None
 
     def __enter__(self) -> Path:
         self._dest = self._recorder.start(self._path, duration=self._duration)

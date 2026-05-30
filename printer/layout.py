@@ -1,8 +1,10 @@
 """Layout utilities for composing text and images on thermal receipts."""
 
-from typing import Literal, Optional, List
+from typing import Literal
+
 from PIL import Image
-from .text import create_two_column_text, create_separator, pad_line, wrap_text
+
+from .text import create_separator, create_two_column_text, pad_line, wrap_text
 
 
 class Layout:
@@ -33,7 +35,7 @@ class Layout:
         self,
         text: str,
         alignment: Literal["left", "center", "right"] = "left",
-        width: Optional[int] = None,
+        width: int | None = None,
     ) -> str:
         """
         Align text within specified width.
@@ -56,7 +58,7 @@ class Layout:
         left_text: str,
         right_text: str,
         separator: str = " ",
-        width: Optional[int] = None,
+        width: int | None = None,
     ) -> str:
         """
         Create two-column text.
@@ -75,7 +77,7 @@ class Layout:
 
         return create_two_column_text(left_text, right_text, width, separator)
 
-    def wrap_text(self, text: str, width: Optional[int] = None) -> List[str]:
+    def wrap_text(self, text: str, width: int | None = None) -> list[str]:
         """
         Wrap text to fit line width.
 
@@ -91,7 +93,7 @@ class Layout:
 
         return wrap_text(text, width)
 
-    def separator(self, char: str = "-", width: Optional[int] = None) -> str:
+    def separator(self, char: str = "-", width: int | None = None) -> str:
         """
         Create a separator line.
 
@@ -108,7 +110,7 @@ class Layout:
         return create_separator(width, char)
 
     def header(
-        self, text: str, separator_char: str = "=", width: Optional[int] = None
+        self, text: str, separator_char: str = "=", width: int | None = None
     ) -> str:
         """
         Create a centered header with separator.
@@ -129,7 +131,7 @@ class Layout:
         return f"{centered}\n{sep}"
 
     def footer(
-        self, text: str, separator_char: str = "=", width: Optional[int] = None
+        self, text: str, separator_char: str = "=", width: int | None = None
     ) -> str:
         """
         Create a centered footer with separator.
@@ -163,8 +165,8 @@ class Layout:
 
     def table_row(
         self,
-        columns: List[str],
-        widths: Optional[List[int]] = None,
+        columns: list[str],
+        widths: list[int] | None = None,
         separator: str = " ",
     ) -> str:
         """
@@ -204,7 +206,7 @@ class Layout:
         text: str,
         top_char: str = "-",
         side_char: str = "|",
-        width: Optional[int] = None,
+        width: int | None = None,
     ) -> str:
         """
         Create a text box with border.
@@ -307,7 +309,7 @@ class ImageLayout:
 
     def combine_images_vertical(
         self,
-        images: List[Image.Image],
+        images: list[Image.Image],
         spacing: int = 10,
         alignment: Literal["left", "center", "right"] = "center",
     ) -> Image.Image:

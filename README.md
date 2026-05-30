@@ -20,6 +20,25 @@ uv sync
 sudo .venv/bin/python examples/printer/basic-usage.py
 ```
 
+## Linting & Type Checking
+
+```bash
+# Format all modules
+uv run ruff format .
+
+# Lint all modules (auto-fix)
+uv run ruff check . --fix
+
+# Lint all modules (check only)
+uv run ruff check .
+
+# Type check all modules
+uv run ty check
+
+# Full check (format + lint + types)
+uv run ruff format . && uv run ruff check . && uv run ty check
+```
+
 ## Quick Start
 
 ```python
@@ -51,6 +70,5 @@ See `examples/printer/` and `examples/camera/` for complete usage demonstrations
 ## Development
 
 ```bash
-uv run ruff check .
-uv run ty check .
+uv run ruff format . && uv run ruff check . && uv run ty check
 ```
