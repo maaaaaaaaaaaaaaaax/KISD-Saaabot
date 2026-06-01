@@ -30,6 +30,11 @@ class DetectionConfig:
                 "Missing Roboflow API key. "
                 "Set ROBOFLOW_API_KEY env var or pass api_key to DetectionConfig."
             )
+        if not self.classification_model_id:
+            raise ValueError(
+                "classification_model_id is required. "
+                "Provide a model identifier in format 'project/version'."
+            )
         if self.confidence_threshold < 0.0 or self.confidence_threshold > 1.0:
             raise ValueError("confidence_threshold must be between 0.0 and 1.0")
         if (

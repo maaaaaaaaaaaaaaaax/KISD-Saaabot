@@ -27,8 +27,8 @@ def detect(
     # Stage 1: detect
     signs = detect_signs(image, config)
 
-    # Stage 2: classify each crop (if model configured)
-    if signs and config.classification_model_id:
+    # Stage 2: classify each crop
+    if signs:
         for sign in signs:
             result = classify(sign.image, config)
             if result:

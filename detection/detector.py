@@ -87,6 +87,8 @@ def draw_boxes(image: Image.Image, signs: list[DetectedSign]) -> Image.Image:
         draw.rectangle([left, top, right, bottom], outline="lime", width=3)
 
         label = sign.name or "sign"
+        if sign.sentiment:
+            label = f"{label} [{sign.sentiment.value}]"
         draw.text(
             (left, top - 16),
             f"{label} {sign.confidence:.2f}",

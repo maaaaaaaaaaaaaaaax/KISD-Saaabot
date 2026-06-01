@@ -26,13 +26,10 @@ def classify(
         config: Detection configuration with classification_model_id set.
 
     Returns:
-        ClassificationResult if classification succeeds, None if no model configured
-        or confidence is below threshold.
+        ClassificationResult if classification succeeds, None if confidence
+        is below threshold.
     """
     config = config or DetectionConfig()
-
-    if not config.classification_model_id:
-        return None
 
     client = build_client(config)
     predictions = infer(client, image, config.classification_model_id)
