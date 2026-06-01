@@ -10,6 +10,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 from .config import DetectionConfig
 
+type BBox = tuple[int, int, int, int]
+
 
 class SignSentiment(Enum):
     """Rough sentiment classification for detected traffic signs."""
@@ -56,49 +58,48 @@ def _build_client(config: DetectionConfig) -> InferenceHTTPClient:
     )
 
 
-def _crop_sign(image: Image.Image, pred: dict) -> Image.Image:
-    """Crop a bounding box region from the source image."""
-    cx = pred["x"]
-    cy = pred["y"]
-    w = pred["width"]
-    h = pred["height"]
+def _bbox(pred: dict, clamp: tuple[int, int] | None = None) -> BBox:
+    """Compute (left, top, right, bottom) from a center-format prediction.
+
+    Args:
+        pred: Prediction dict with x, y, width, height keys.
+        clamp: Optional (max_width, max_height) to clamp within image bounds.
+    """
+    cx, cy = pred["x"], pred["y"]
+    w, h = pred["width"], pred["height"]
     left = int(cx - w / 2)
     top = int(cy - h / 2)
     right = int(cx + w / 2)
     bottom = int(cy + h / 2)
 
-    left = max(0, left)
-    top = max(0, top)
-    right = min(image.width, right)
-    bottom = min(image.height, bottom)
+    if clamp:
+        left = max(0, left)
+        top = max(0, top)
+        right = min(clamp[0], right)
+        bottom = min(clamp[1], bottom)
 
-    return image.crop((left, top, right, bottom))
+    return left, top, right, bottom
+
+
+def _crop_sign(image: Image.Image, pred: dict) -> Image.Image:
+    """Crop a bounding box region from the source image."""
+    box = _bbox(pred, clamp=(image.width, image.height))
+    return image.crop(box)
 
 
 def _draw_boxes(image: Image.Image, predictions: list[dict]) -> Image.Image:
     """Draw bounding boxes and labels onto a copy of the image."""
     annotated = image.copy()
     draw = ImageDraw.Draw(annotated)
-
-    try:
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 14)
-    except OSError:
-        font = ImageFont.load_default()
+    font = ImageFont.load_default()
 
     for pred in predictions:
-        cx, cy = pred["x"], pred["y"]
-        w, h = pred["width"], pred["height"]
-        left = int(cx - w / 2)
-        top = int(cy - h / 2)
-        right = int(cx + w / 2)
-        bottom = int(cy + h / 2)
-
+        left, top, right, bottom = _bbox(pred)
         draw.rectangle([left, top, right, bottom], outline="lime", width=3)
 
         label = pred.get("class", "sign")
         conf = pred.get("confidence", 0.0)
-        text = f"{label} {conf:.2f}"
-        draw.text((left, top - 16), text, fill="lime", font=font)
+        draw.text((left, top - 16), f"{label} {conf:.2f}", fill="lime", font=font)
 
     return annotated
 
@@ -149,13 +150,14 @@ def detect(
     signs: list[DetectedSign] = []
     for pred in predictions:
         cropped = _crop_sign(image, pred)
+        left, top, _, _ = _bbox(pred)
         signs.append(
             DetectedSign(
                 image=cropped,
                 confidence=pred.get("confidence", 0.0),
                 name=pred.get("class"),
-                x=int(pred["x"] - pred["width"] / 2),
-                y=int(pred["y"] - pred["height"] / 2),
+                x=left,
+                y=top,
                 width=int(pred["width"]),
                 height=int(pred["height"]),
             )
