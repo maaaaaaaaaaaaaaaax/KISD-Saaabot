@@ -1,7 +1,7 @@
 """Configuration for the reasoning module."""
 
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 BASE_PROMPT = (
     "You are a decision-making system embedded in a mobile device that observes "
@@ -25,7 +25,7 @@ class ReasoningConfig:
 
     api_key: str = ""
     model: str = "claude-sonnet-4-6"
-    base_prompt: str = field(default=BASE_PROMPT)
+    base_prompt: str = BASE_PROMPT
     max_tokens: int = 1024
 
     def __post_init__(self) -> None:

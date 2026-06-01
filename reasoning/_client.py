@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from anthropic import Anthropic
+from anthropic.types import MessageParam
 
 from .config import ReasoningConfig
 
@@ -17,10 +18,10 @@ class ReasoningSession:
     def __init__(self, config: ReasoningConfig) -> None:
         self._config = config
         self._client = Anthropic(api_key=config.api_key)
-        self._history: list[dict[str, str]] = []
+        self._history: list[MessageParam] = []
 
     @property
-    def history(self) -> list[dict[str, str]]:
+    def history(self) -> list[MessageParam]:
         """Current conversation history."""
         return list(self._history)
 
@@ -47,7 +48,15 @@ class ReasoningSession:
             messages=self._history,
         )
 
-        assistant_text = response.content[0].text
+        if not response.content:
+            raise RuntimeError("Claude returned an empty response.")
+
+        block = response.content[0]
+        if not hasattr(block, "text"):
+            msg = f"Unexpected response block type: {type(block).__name__}"
+            raise RuntimeError(msg)
+
+        assistant_text = str(block.text)
         self._history.append({"role": "assistant", "content": assistant_text})
 
         return assistant_text
