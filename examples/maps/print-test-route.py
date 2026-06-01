@@ -1,6 +1,7 @@
 """Test: plan a short route in Cologne, fetch Street View images, and print them."""
 
 from dotenv import load_dotenv
+from PIL import Image
 
 from maps import Maps, MapsConfig
 from maps.route import compute_bearing
@@ -12,6 +13,20 @@ load_dotenv()
 ORIGIN = "Koln Dom"
 DESTINATION = "Klettenberg, Koln"
 MAX_FRAMES = 1
+
+
+def _print_frame(
+    p: Printer,
+    image: Image.Image,
+    index: int,
+    lat: float,
+    lng: float,
+    label: str,
+) -> None:
+    """Print a single frame (street-view or aerial) with its caption."""
+    p.print_image(image)
+    p.print_text(f"#{index} {label} | {lat:.5f}, {lng:.5f}")
+    p.layout.spacer(10)
 
 
 def main() -> None:
@@ -57,10 +72,7 @@ def main() -> None:
                 f"heading={heading:.0f} size={image.size}"
             )
 
-            p.print_image(image)
-            p.print_text(f"#{cache_index} | {lat:.5f}, {lng:.5f}")
-            p.layout.spacer(10)
-
+            _print_frame(p, image, cache_index, lat, lng, "")
             cache_index += 1
 
             if (i + 1) % config.aerial_every_n == 0:
@@ -69,10 +81,7 @@ def main() -> None:
                     f"[{cache_index:02d}] aerial {lat:.5f},{lng:.5f} size={aerial.size}"
                 )
 
-                p.print_image(aerial)
-                p.print_text(f"#{cache_index} aerial | {lat:.5f}, {lng:.5f}")
-                p.layout.spacer(10)
-
+                _print_frame(p, aerial, cache_index, lat, lng, "aerial")
                 cache_index += 1
 
             if i + 1 >= MAX_FRAMES:
