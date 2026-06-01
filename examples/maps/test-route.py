@@ -55,8 +55,8 @@ def main() -> None:
                 )
                 cache_index += 1
 
-            if i >= MAX_FRAMES:
-                print(f"... stopping after {MAX_FRAMES + 1} street-view images")
+            if i + 1 >= MAX_FRAMES:
+                print(f"... stopping after {MAX_FRAMES} street-view images")
                 break
     print("Done!")
 
