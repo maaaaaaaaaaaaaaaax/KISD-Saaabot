@@ -18,10 +18,10 @@ TEST_IMAGES_DIR = Path(__file__).resolve().parent / "test-images"
 OUTPUT_DIR = Path(__file__).resolve().parent / "detections"
 
 # Stage 1 model: detect signs in full scene
-# Stage 2 model: classify individual cropped signs (placeholder — swap when ready)
+# Stage 2 model: classify individual cropped signs
 CONFIG = DetectionConfig(
     model_id="traffic-sign-detection-znanc/9",
-    classification_model_id="road-sign-classification/1",  # TODO: replace
+    classification_model_id="traffic-signs-detection-europe/11",
 )
 
 
@@ -44,28 +44,35 @@ def main() -> None:
         shutil.rmtree(OUTPUT_DIR)
     OUTPUT_DIR.mkdir(parents=True)
 
+    classified_count = 0
+
     for image_path in image_files:
         image = Image.open(image_path).convert("RGB")
         result = detect(image, CONFIG)
 
-        if result.has_traffic_signs:
-            print(f"  {image_path.name}: {result.number_of_detected_signs} sign(s)")
-            for i, sign in enumerate(result.signs):
-                sentiment_str = f" [{sign.sentiment.value}]" if sign.sentiment else ""
-                print(
-                    f"    {i + 1}. {sign.name} ({sign.confidence:.2f}){sentiment_str}"
-                )
+        if not result.has_traffic_signs:
+            continue
 
-                # Save individual crop
-                crop_path = OUTPUT_DIR / f"{image_path.stem}-crop-{i + 1}.jpg"
-                sign.image.save(crop_path)
-        else:
-            print(f"  {image_path.name}: no signs detected")
+        for i, sign in enumerate(result.signs):
+            if sign.sentiment is None:
+                # Stage 2 did not classify this sign — skip
+                continue
 
-        output_path = OUTPUT_DIR / image_path.name
-        result.annotated_image.save(output_path)
+            classified_count += 1
+            name = sign.name or "unknown"
+            print(
+                f"  {image_path.name} [{i + 1}]: "
+                f"{name} ({sign.confidence:.2f}) [{sign.sentiment.value}]"
+            )
 
-    print(f"\nDone. Results saved to: {OUTPUT_DIR}")
+            safe_name = name.replace(" ", "-").replace("/", "-")
+            crop_path = OUTPUT_DIR / f"{image_path.stem}-{i + 1}-{safe_name}.jpg"
+            sign.image.save(crop_path)
+
+    if classified_count == 0:
+        print("  No signs were classified by stage 2.")
+    else:
+        print(f"\n{classified_count} sign(s) classified. Saved to: {OUTPUT_DIR}")
 
 
 if __name__ == "__main__":
