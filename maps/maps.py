@@ -1,5 +1,7 @@
 """Maps module facade."""
 
+from collections.abc import Iterator
+
 from PIL import Image
 
 from .aerial import Aerial
@@ -49,7 +51,9 @@ class Maps:
         """Plan a route between two locations."""
         return self._route_planner.plan(origin, destination)
 
-    def fetch_route(self, route: Route):
+    def fetch_route(
+        self, route: Route
+    ) -> Iterator[tuple[tuple[float, float], float, Image.Image]]:
         """Fetch Street View images for a route."""
         return self._streetview.fetch_route(route)
 

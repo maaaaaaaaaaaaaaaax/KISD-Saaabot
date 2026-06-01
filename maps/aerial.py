@@ -1,6 +1,7 @@
 """Aerial/satellite image fetching via Google Maps Static API."""
 
 import hashlib
+import math
 from io import BytesIO
 from pathlib import Path
 
@@ -17,7 +18,6 @@ class Aerial:
 
     def __init__(self, config: MapsConfig) -> None:
         self._config = config
-        self._config.cache_dir.mkdir(parents=True, exist_ok=True)
 
     def fetch(
         self,
@@ -75,8 +75,6 @@ class Aerial:
 
         Uses the larger dimension to ensure the frame fits the image.
         """
-        import math
-
         max_dim_m = max(frame_m)
         # At zoom 0, the world is 256px wide ≈ 40075km at equator.
         # meters_per_pixel = (40075016 * cos(lat)) / (256 * 2^zoom)

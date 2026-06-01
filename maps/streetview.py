@@ -1,7 +1,7 @@
 """Street View image fetching via Google Maps Static API."""
 
 import hashlib
-from collections.abc import Generator
+from collections.abc import Iterator
 from io import BytesIO
 from pathlib import Path
 
@@ -19,7 +19,6 @@ class StreetView:
 
     def __init__(self, config: MapsConfig) -> None:
         self._config = config
-        self._config.cache_dir.mkdir(parents=True, exist_ok=True)
 
     def fetch(
         self,
@@ -64,7 +63,7 @@ class StreetView:
 
     def fetch_route(
         self, route: Route
-    ) -> Generator[tuple[tuple[float, float], float, Image.Image]]:
+    ) -> Iterator[tuple[tuple[float, float], float, Image.Image]]:
         """Fetch Street View images for all coordinates in a route.
 
         Yields:

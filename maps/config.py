@@ -40,14 +40,10 @@ class MapsConfig:
                 "environment or pass api_key to MapsConfig."
             )
         self.cache_dir = Path(self.cache_dir)
+        self.cache_dir.mkdir(parents=True, exist_ok=True)
         if self.fov < 1 or self.fov > 120:
             raise ValueError(f"fov must be 1-120, got {self.fov}")
         if self.pitch < -90 or self.pitch > 90:
             raise ValueError(f"pitch must be -90 to 90, got {self.pitch}")
         if self.aerial_every_n < 1:
             raise ValueError(f"aerial_every_n must be >= 1, got {self.aerial_every_n}")
-
-    @classmethod
-    def default(cls, **kwargs: object) -> "MapsConfig":
-        """Create config with sensible defaults."""
-        return cls(**kwargs)  # type: ignore[arg-type]

@@ -110,9 +110,9 @@ def _haversine(a: tuple[float, float], b: tuple[float, float]) -> float:
     dlat = lat2 - lat1
     dlon = lon2 - lon1
 
-    sin_dlat = math.sin(dlat / 2) ** 2
-    sin_dlon = math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
-    return 2 * R * math.asin(math.sqrt(sin_dlat + sin_dlon))
+    h_lat = math.sin(dlat / 2) ** 2
+    h_lon = math.cos(lat1) * math.cos(lat2) * math.sin(dlon / 2) ** 2
+    return 2 * R * math.asin(math.sqrt(h_lat + h_lon))
 
 
 def compute_bearing(a: tuple[float, float], b: tuple[float, float]) -> float:

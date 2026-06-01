@@ -10,7 +10,7 @@ load_dotenv()
 
 ORIGIN = "Koln Dom"
 DESTINATION = "Klettenberg, Koln"
-MAX_FRAMES = 20
+MAX_FRAMES = 1
 
 
 def main() -> None:
