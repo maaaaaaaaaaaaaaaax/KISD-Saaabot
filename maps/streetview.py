@@ -21,13 +21,20 @@ class StreetView:
         self._config = config
         self._config.cache_dir.mkdir(parents=True, exist_ok=True)
 
-    def fetch(self, lat: float, lng: float, heading: float = 0.0) -> Image.Image:
+    def fetch(
+        self,
+        lat: float,
+        lng: float,
+        heading: float = 0.0,
+        frame_index: int | None = None,
+    ) -> Image.Image:
         """Fetch a single Street View image.
 
         Args:
             lat: Latitude.
             lng: Longitude.
             heading: Camera heading in degrees (0-360).
+            frame_index: Optional 1-based frame number for cache naming.
 
         Returns:
             PIL Image of the street view.
@@ -35,7 +42,7 @@ class StreetView:
         Raises:
             requests.HTTPError: On API failure.
         """
-        cached = self._cache_path(lat, lng, heading)
+        cached = self._cache_path(lat, lng, heading, frame_index)
         if cached.exists():
             return Image.open(cached)
 
@@ -70,11 +77,21 @@ class StreetView:
             else:
                 heading = compute_bearing(coords[i - 1], coord) if i > 0 else 0.0
 
-            image = self.fetch(coord[0], coord[1], heading)
+            image = self.fetch(coord[0], coord[1], heading, frame_index=i + 1)
             yield coord, heading, image
 
-    def _cache_path(self, lat: float, lng: float, heading: float) -> Path:
+    def _cache_path(
+        self,
+        lat: float,
+        lng: float,
+        heading: float,
+        frame_index: int | None = None,
+    ) -> Path:
         """Generate a deterministic cache file path for a location."""
         key = f"{lat:.6f}_{lng:.6f}_{heading:.1f}"
-        filename = hashlib.md5(key.encode()).hexdigest() + ".jpg"  # noqa: S324
+        hash_name = hashlib.md5(key.encode()).hexdigest()  # noqa: S324
+        if frame_index is None:
+            filename = f"{hash_name}.jpg"
+        else:
+            filename = f"{frame_index}-{hash_name}.jpg"
         return self._config.cache_dir / filename

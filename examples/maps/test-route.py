@@ -3,31 +3,63 @@
 from dotenv import load_dotenv
 
 from maps import Maps, MapsConfig
+from maps.route import compute_bearing
 
 load_dotenv()
 
 
-config = MapsConfig(step_interval_m=100.0)
-print(f"API key loaded: {'yes' if config.api_key else 'NO'}")
+ORIGIN = "Koln Dom"
+DESTINATION = "Klettenberg, Koln"
+MAX_FRAMES = 20
 
-with Maps(config) as m:
-    route = m.plan("Köln Dom", "Ehrenfeld, Köln")
-    print(
-        f"Route: {route.total_distance_m:.0f}m, {len(route.coordinates)} sampled points"
-    )
 
-    for i, (coord, heading, image) in enumerate(m.fetch_route(route)):
+def main() -> None:
+    """Run a short route demo with periodic aerial snapshots."""
+    config = MapsConfig(step_interval_m=100.0, aerial_every_n=5)
+    print(f"API key loaded: {'yes' if config.api_key else 'NO'}")
+
+    with Maps(config) as maps_client:
+        route = maps_client.plan(ORIGIN, DESTINATION)
         print(
-            f"  [{i}] {coord[0]:.5f},{coord[1]:.5f} "
-            f"heading={heading:.0f}° size={image.size}"
+            f"Route: {route.total_distance_m:.0f}m, "
+            f"{len(route.coordinates)} sampled points"
         )
-        if i >= 20:
-            print("  ... (stopping after 20 images)")
-            break
+        print(f"Aerial cadence: every {config.aerial_every_n} street-view frames")
 
-    # Fetch an aerial image at the last coordinate
-    last_coord = route.coordinates[-1]
-    aerial = m.fetch_aerial(last_coord[0], last_coord[1])
-    print(f"\n  Aerial at {last_coord[0]:.5f},{last_coord[1]:.5f} size={aerial.size}")
+        cache_index = 1
+        coords = route.coordinates
 
-print("Done!")
+        for i, coord in enumerate(coords):
+            if i < len(coords) - 1:
+                heading = compute_bearing(coord, coords[i + 1])
+            else:
+                heading = compute_bearing(coords[i - 1], coord) if i > 0 else 0.0
+
+            lat, lng = coord
+            image = maps_client.streetview.fetch(
+                lat,
+                lng,
+                heading=heading,
+                frame_index=cache_index,
+            )
+            print(
+                f"[{cache_index:02d}] streetview {lat:.5f},{lng:.5f} "
+                f"heading={heading:.0f} size={image.size}"
+            )
+            cache_index += 1
+
+            if (i + 1) % config.aerial_every_n == 0:
+                aerial = maps_client.fetch_aerial(lat, lng, frame_index=cache_index)
+                print(
+                    f"[{cache_index:02d}] aerial {lat:.5f},{lng:.5f} size={aerial.size}"
+                )
+                cache_index += 1
+
+            if i >= MAX_FRAMES:
+                print(f"... stopping after {MAX_FRAMES + 1} street-view images")
+                break
+    print("Done!")
+
+
+if __name__ == "__main__":
+    main()

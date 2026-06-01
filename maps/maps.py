@@ -53,6 +53,8 @@ class Maps:
         """Fetch Street View images for a route."""
         return self._streetview.fetch_route(route)
 
-    def fetch_aerial(self, lat: float, lng: float) -> Image.Image:
+    def fetch_aerial(
+        self, lat: float, lng: float, frame_index: int | None = None
+    ) -> Image.Image:
         """Fetch an aerial image for a coordinate."""
-        return self._aerial.fetch(lat, lng)
+        return self._aerial.fetch(lat, lng, frame_index=frame_index)

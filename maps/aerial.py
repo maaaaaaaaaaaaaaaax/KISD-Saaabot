@@ -25,6 +25,7 @@ class Aerial:
         lng: float,
         frame_m: tuple[float, float] | None = None,
         resolution: tuple[int, int] | None = None,
+        frame_index: int | None = None,
     ) -> Image.Image:
         """Fetch an aerial image centered on a coordinate.
 
@@ -35,6 +36,7 @@ class Aerial:
                 Defaults to config.aerial_frame_m.
             resolution: Image resolution in pixels as (width, height).
                 Defaults to config.aerial_resolution.
+            frame_index: Optional 1-based frame number for cache naming.
 
         Returns:
             PIL Image of the aerial view.
@@ -47,7 +49,7 @@ class Aerial:
 
         zoom = self._estimate_zoom(lat, frame_m)
 
-        cached = self._cache_path(lat, lng, zoom, resolution)
+        cached = self._cache_path(lat, lng, zoom, resolution, frame_index)
         if cached.exists():
             return Image.open(cached)
 
@@ -95,8 +97,13 @@ class Aerial:
         lng: float,
         zoom: int,
         resolution: tuple[int, int],
+        frame_index: int | None = None,
     ) -> Path:
         """Generate a deterministic cache file path."""
         key = f"aerial_{lat:.6f}_{lng:.6f}_z{zoom}_{resolution[0]}x{resolution[1]}"
-        filename = hashlib.md5(key.encode()).hexdigest() + ".jpg"  # noqa: S324
+        hash_name = hashlib.md5(key.encode()).hexdigest()  # noqa: S324
+        if frame_index is None:
+            filename = f"{hash_name}.jpg"
+        else:
+            filename = f"{frame_index}-aerial-{hash_name}.jpg"
         return self._config.cache_dir / filename
