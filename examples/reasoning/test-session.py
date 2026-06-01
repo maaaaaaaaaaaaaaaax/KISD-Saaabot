@@ -2,9 +2,10 @@
 
 from dotenv import load_dotenv
 
+from reasoning import create_session
+
 load_dotenv()
 
-from reasoning import create_session
 
 session = create_session()
 
