@@ -33,7 +33,12 @@ build-backend = "hatchling.build"
 packages = ["printer", "camera", "maps", "detection", "reasoning"]
 
 [dependency-groups]
-dev = ["ruff>=0.15.5", "ty>=0.0.21"]
+dev = [
+    "ruff>=0.15.5",
+    "ty>=0.0.21",
+    { include-group = "detection" },
+    { include-group = "reasoning" },
+]
 detection = ["ultralytics>=8.0", "huggingface-hub>=0.20", "inference-sdk>=0.20"]
 reasoning = ["anthropic>=0.40"]
 

@@ -1827,8 +1827,12 @@ detection = [
     { name = "ultralytics" },
 ]
 dev = [
+    { name = "anthropic" },
+    { name = "huggingface-hub" },
+    { name = "inference-sdk" },
     { name = "ruff" },
     { name = "ty" },
+    { name = "ultralytics" },
 ]
 reasoning = [
     { name = "anthropic" },
@@ -1853,8 +1857,12 @@ detection = [
     { name = "ultralytics", specifier = ">=8.0" },
 ]
 dev = [
+    { name = "anthropic", specifier = ">=0.40" },
+    { name = "huggingface-hub", specifier = ">=0.20" },
+    { name = "inference-sdk", specifier = ">=0.20" },
     { name = "ruff", specifier = ">=0.15.5" },
     { name = "ty", specifier = ">=0.0.21" },
+    { name = "ultralytics", specifier = ">=8.0" },
 ]
 reasoning = [{ name = "anthropic", specifier = ">=0.40" }]
 
