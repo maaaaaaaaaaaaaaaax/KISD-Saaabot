@@ -24,6 +24,12 @@ uv sync
 sudo .venv/bin/python examples/printer/basic-usage.py
 ```
 
+## Heavy dependencies
+
+Heavy dependencies are grouped for instance into "detection"
+To install these add `--group detection` to the uv run arg.
+E.G: `uv run  examples/maps/far-traffic-sign-detection.py`
+
 ## Linting & Type Checking
 
 ```bash

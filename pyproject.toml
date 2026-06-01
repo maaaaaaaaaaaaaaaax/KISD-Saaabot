@@ -34,6 +34,7 @@ packages = ["printer", "camera", "maps"]
 
 [dependency-groups]
 dev = ["ruff>=0.15.5", "ty>=0.0.21"]
+detection = ["ultralytics>=8.0", "huggingface-hub>=0.20", "inference-sdk>=0.20"]
 
 [tool.ruff]
 target-version = "py313"
