@@ -19,6 +19,8 @@ class DetectionConfig:
     api_url: str = "https://serverless.roboflow.com"
     model_id: str = "traffic-sign-detection-znanc/9"
     confidence_threshold: float = 0.3
+    classification_model_id: str | None = None
+    classification_confidence_threshold: float = 0.5
 
     def __post_init__(self) -> None:
         if not self.api_key:
@@ -30,3 +32,10 @@ class DetectionConfig:
             )
         if self.confidence_threshold < 0.0 or self.confidence_threshold > 1.0:
             raise ValueError("confidence_threshold must be between 0.0 and 1.0")
+        if (
+            self.classification_confidence_threshold < 0.0
+            or self.classification_confidence_threshold > 1.0
+        ):
+            raise ValueError(
+                "classification_confidence_threshold must be between 0.0 and 1.0"
+            )

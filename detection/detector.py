@@ -1,13 +1,11 @@
-"""Traffic sign detection via inference API."""
+"""Traffic sign detection — stage 1: locate signs in a full scene image."""
 
 from dataclasses import dataclass, field
 from enum import Enum
-from pathlib import Path
-from tempfile import NamedTemporaryFile
 
-from inference_sdk import InferenceHTTPClient
 from PIL import Image, ImageDraw, ImageFont
 
+from ._inference import build_client, infer
 from .config import DetectionConfig
 
 type BBox = tuple[int, int, int, int]
@@ -50,21 +48,8 @@ class DetectionResult:
         return [s.image for s in self.signs]
 
 
-def _build_client(config: DetectionConfig) -> InferenceHTTPClient:
-    """Create inference client from config."""
-    return InferenceHTTPClient(
-        api_url=config.api_url,
-        api_key=config.api_key,
-    )
-
-
 def _bbox(pred: dict, clamp: tuple[int, int] | None = None) -> BBox:
-    """Compute (left, top, right, bottom) from a center-format prediction.
-
-    Args:
-        pred: Prediction dict with x, y, width, height keys.
-        clamp: Optional (max_width, max_height) to clamp within image bounds.
-    """
+    """Compute (left, top, right, bottom) from a center-format prediction."""
     cx, cy = pred["x"], pred["y"]
     w, h = pred["width"], pred["height"]
     left = int(cx - w / 2)
@@ -87,60 +72,47 @@ def _crop_sign(image: Image.Image, pred: dict) -> Image.Image:
     return image.crop(box)
 
 
-def _draw_boxes(image: Image.Image, predictions: list[dict]) -> Image.Image:
+def draw_boxes(image: Image.Image, signs: list[DetectedSign]) -> Image.Image:
     """Draw bounding boxes and labels onto a copy of the image."""
     annotated = image.copy()
     draw = ImageDraw.Draw(annotated)
     font = ImageFont.load_default()
 
-    for pred in predictions:
-        left, top, right, bottom = _bbox(pred)
+    for sign in signs:
+        left = sign.x
+        top = sign.y
+        right = sign.x + sign.width
+        bottom = sign.y + sign.height
         draw.rectangle([left, top, right, bottom], outline="lime", width=3)
 
-        label = pred.get("class", "sign")
-        conf = pred.get("confidence", 0.0)
-        draw.text((left, top - 16), f"{label} {conf:.2f}", fill="lime", font=font)
+        label = sign.name or "sign"
+        draw.text(
+            (left, top - 16),
+            f"{label} {sign.confidence:.2f}",
+            fill="lime",
+            font=font,
+        )
 
     return annotated
 
 
-def _infer(
-    client: InferenceHTTPClient, image: Image.Image, model_id: str
-) -> list[dict]:
-    """Run inference on a PIL image via the Roboflow API.
-
-    The SDK expects a file path, so we write to a temp file.
-    """
-    with NamedTemporaryFile(suffix=".jpg", delete=False) as tmp:
-        image.save(tmp, format="JPEG")
-        tmp_path = Path(tmp.name)
-
-    try:
-        result = client.infer(str(tmp_path), model_id=model_id)
-    finally:
-        tmp_path.unlink(missing_ok=True)
-
-    return result.get("predictions", [])
-
-
-def detect(
+def detect_signs(
     image: Image.Image, config: DetectionConfig | None = None
-) -> DetectionResult:
-    """Detect traffic signs in a PIL image.
+) -> list[DetectedSign]:
+    """Detect traffic signs in a PIL image (stage 1 only).
 
     Args:
         image: Source image (PIL format, e.g. from Street View).
         config: Detection configuration. Uses defaults if None.
 
     Returns:
-        DetectionResult with sign crops and metadata.
+        List of DetectedSign with cropped images and bounding box data.
     """
     config = config or DetectionConfig()
-    client = _build_client(config)
+    client = build_client(config)
 
-    predictions = _infer(client, image, config.model_id)
+    predictions = infer(client, image, config.model_id)
 
-    # Filter by confidence threshold
     predictions = [
         p
         for p in predictions
@@ -163,11 +135,4 @@ def detect(
             )
         )
 
-    annotated = _draw_boxes(image, predictions) if signs else image.copy()
-
-    return DetectionResult(
-        has_traffic_signs=len(signs) > 0,
-        number_of_detected_signs=len(signs),
-        annotated_image=annotated,
-        signs=signs,
-    )
+    return signs

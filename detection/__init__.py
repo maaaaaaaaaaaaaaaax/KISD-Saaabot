@@ -1,10 +1,13 @@
-"""Detection module — traffic sign detection on Street View images."""
+"""Detection module — traffic sign detection and classification."""
 
+from .classifier import ClassificationResult, classify
 from .config import DetectionConfig
-from .detection import Detection
-from .detector import DetectedSign, DetectionResult, SignSentiment, detect
+from .detection import Detection, detect
+from .detector import DetectedSign, DetectionResult, SignSentiment
 
 __all__ = [
+    "classify",
+    "ClassificationResult",
     "detect",
     "DetectedSign",
     "Detection",
