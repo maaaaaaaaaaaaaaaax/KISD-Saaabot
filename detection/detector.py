@@ -27,6 +27,7 @@ class DetectedSign:
     confidence: float
     name: str | None = None
     sentiment: SignSentiment | None = None
+    classified: bool = False
     x: int = 0
     y: int = 0
     width: int = 0
@@ -96,6 +97,14 @@ def draw_boxes(image: Image.Image, signs: list[DetectedSign]) -> Image.Image:
     return annotated
 
 
+# Stage 1 models may return sentiment-style class names directly
+_STAGE1_SENTIMENT: dict[str, SignSentiment] = {
+    "good": SignSentiment.GOOD,
+    "moderate": SignSentiment.MODERATE,
+    "bad": SignSentiment.BAD,
+}
+
+
 def detect_signs(
     image: Image.Image, config: DetectionConfig | None = None
 ) -> list[DetectedSign]:
@@ -123,11 +132,13 @@ def detect_signs(
     for pred in predictions:
         cropped = _crop_sign(image, pred)
         left, top, _, _ = _bbox(pred)
+        class_name = pred.get("class", "")
+        sentiment = _STAGE1_SENTIMENT.get(class_name.lower())
         signs.append(
             DetectedSign(
                 image=cropped,
                 confidence=pred.get("confidence", 0.0),
-                name=pred.get("class"),
+                sentiment=sentiment,
                 x=left,
                 y=top,
                 width=int(pred["width"]),

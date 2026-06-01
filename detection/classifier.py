@@ -6,28 +6,6 @@ from PIL import Image
 
 from ._inference import build_client, infer
 from .config import DetectionConfig
-from .detector import SignSentiment
-
-# Mapping from common sign class names to sentiment.
-# Extend this dict as you discover classes from your classification model.
-_SENTIMENT_MAP: dict[str, SignSentiment] = {
-    # Prohibitory / danger → BAD
-    "stop": SignSentiment.BAD,
-    "no-entry": SignSentiment.BAD,
-    "speed-limit": SignSentiment.BAD,
-    "no-overtaking": SignSentiment.BAD,
-    "danger": SignSentiment.BAD,
-    "yield": SignSentiment.BAD,
-    # Mandatory → MODERATE
-    "mandatory": SignSentiment.MODERATE,
-    "roundabout": SignSentiment.MODERATE,
-    "keep-right": SignSentiment.MODERATE,
-    "keep-left": SignSentiment.MODERATE,
-    # Informational / positive → GOOD
-    "information": SignSentiment.GOOD,
-    "priority-road": SignSentiment.GOOD,
-    "end-of-restriction": SignSentiment.GOOD,
-}
 
 
 @dataclass
@@ -36,16 +14,6 @@ class ClassificationResult:
 
     name: str
     confidence: float
-    sentiment: SignSentiment | None = None
-
-
-def _resolve_sentiment(class_name: str) -> SignSentiment | None:
-    """Look up sentiment for a sign class name (case-insensitive, partial match)."""
-    lower = class_name.lower().replace(" ", "-").replace("_", "-")
-    for key, sentiment in _SENTIMENT_MAP.items():
-        if key in lower:
-            return sentiment
-    return None
 
 
 def classify(
@@ -80,10 +48,10 @@ def classify(
         return None
 
     name = top.get("class", "unknown")
-    sentiment = _resolve_sentiment(name)
+    if name == "undefined":
+        return None
 
     return ClassificationResult(
         name=name,
         confidence=confidence,
-        sentiment=sentiment,
     )

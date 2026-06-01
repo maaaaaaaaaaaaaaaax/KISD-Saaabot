@@ -33,7 +33,7 @@ def detect(
             result = classify(sign.image, config)
             if result:
                 sign.name = result.name
-                sign.sentiment = result.sentiment
+                sign.classified = True
 
     # Annotate
     annotated = draw_boxes(image, signs) if signs else image.copy()

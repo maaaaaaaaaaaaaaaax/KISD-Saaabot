@@ -21,7 +21,7 @@ OUTPUT_DIR = Path(__file__).resolve().parent / "detections"
 # Stage 2 model: classify individual cropped signs
 CONFIG = DetectionConfig(
     model_id="traffic-sign-detection-znanc/9",
-    classification_model_id="traffic-signs-detection-europe/11",
+    classification_model_id="road-signs-ohan1/1",
 )
 
 
@@ -54,20 +54,22 @@ def main() -> None:
             continue
 
         for i, sign in enumerate(result.signs):
-            if sign.sentiment is None:
-                # Stage 2 did not classify this sign — skip
+            # Always save crop for inspection
+            crop_path = OUTPUT_DIR / f"{image_path.stem}-{i + 1}.jpg"
+            sign.image.save(crop_path)
+
+            if not sign.classified:
                 continue
 
             classified_count += 1
             name = sign.name or "unknown"
-            print(
-                f"  {image_path.name} [{i + 1}]: "
-                f"{name} ({sign.confidence:.2f}) [{sign.sentiment.value}]"
-            )
+            sentiment_str = f" [{sign.sentiment.value}]" if sign.sentiment else ""
+            print(f"  {image_path.name} [{i + 1}]: {name}{sentiment_str}")
 
+            # Rename crop to include classified name
             safe_name = name.replace(" ", "-").replace("/", "-")
-            crop_path = OUTPUT_DIR / f"{image_path.stem}-{i + 1}-{safe_name}.jpg"
-            sign.image.save(crop_path)
+            named_path = OUTPUT_DIR / f"{image_path.stem}-{i + 1}-{safe_name}.jpg"
+            crop_path.rename(named_path)
 
     if classified_count == 0:
         print("  No signs were classified by stage 2.")
