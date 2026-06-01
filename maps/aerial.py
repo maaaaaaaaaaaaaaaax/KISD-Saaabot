@@ -102,6 +102,8 @@ class Aerial:
         """Generate a deterministic cache file path."""
         key = f"aerial_{lat:.6f}_{lng:.6f}_z{zoom}_{resolution[0]}x{resolution[1]}"
         hash_name = hashlib.md5(key.encode()).hexdigest()  # noqa: S324
+        if frame_index is not None and frame_index < 1:
+            raise ValueError(f"frame_index must be >= 1, got {frame_index}")
         if frame_index is None:
             filename = f"{hash_name}.jpg"
         else:
