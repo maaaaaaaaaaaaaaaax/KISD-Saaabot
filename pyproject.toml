@@ -39,7 +39,12 @@ dev = [
     { include-group = "detection" },
     { include-group = "reasoning" },
 ]
-detection = ["ultralytics>=8.0", "huggingface-hub>=0.20", "inference-sdk>=0.20"]
+detection = [
+    "ultralytics>=8.0",
+    "huggingface-hub>=0.20",
+    "inference-sdk>=0.20",
+    "onnxruntime>=1.17",
+]
 reasoning = ["anthropic>=0.40"]
 
 [tool.ruff]

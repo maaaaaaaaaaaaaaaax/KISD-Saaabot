@@ -21,11 +21,14 @@ class DetectionConfig:
     confidence_threshold: float = 0.3
     classification_model_id: str = "road-signs-ohan1/1"
     classification_confidence_threshold: float = 0.5
+    use_local_classification: bool = False
+    classification_onnx_model_path: str = "traffic-sign-classification.onnx"
+    classification_labels_path: str = "traffic-sign-classification-classes.txt"
 
     def __post_init__(self) -> None:
         if not self.api_key:
             self.api_key = os.environ.get("ROBOFLOW_API_KEY", "")
-        if not self.api_key:
+        if not self.api_key and not self.use_local_classification:
             raise ValueError(
                 "Missing Roboflow API key. "
                 "Set ROBOFLOW_API_KEY env var or pass api_key to DetectionConfig."

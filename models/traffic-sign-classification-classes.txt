@@ -1,0 +1,43 @@
+20 limit speed
+30 limit speed
+50 limit speed
+60 limit speed
+70 limit speed
+80 limit speed
+street 80 limit speed
+100 limit speed
+120 limit speed
+no passing
+no passing over 3.5 t
+priority
+priority Road starts
+yield Right-of-Way
+stop sign
+no entry
+no entry over 3.5 t
+do not enter
+warning sign
+single curve left
+single curve right
+double curve left
+rough road
+slipping warning
+road narrow right
+work in process
+traffic signal warning
+pedestrian crossing warning
+attention to children
+cyclists warning
+icy road
+wild animals warning
+restrictions end
+must turn right
+must turn left
+must stay straight
+stay straight or turn right
+stay straight or turn left
+drive around obstacle right
+drive around obstacle left
+entrance to roundabout
+end of no-passing under 3.5 t
+end of no-passing

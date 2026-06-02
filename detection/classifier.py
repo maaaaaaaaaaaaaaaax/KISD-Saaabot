@@ -1,5 +1,7 @@
 """Traffic sign classification — stage 2: identify a cropped sign image."""
 
+from __future__ import annotations
+
 from dataclasses import dataclass
 
 from PIL import Image
@@ -30,6 +32,11 @@ def classify(
         is below threshold.
     """
     config = config or DetectionConfig()
+
+    if config.use_local_classification:
+        from ._onnx_classifier import classify_onnx
+
+        return classify_onnx(image, config)
 
     client = build_client(config)
     predictions = infer(client, image, config.classification_model_id)

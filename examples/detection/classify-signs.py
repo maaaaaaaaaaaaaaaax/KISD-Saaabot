@@ -21,7 +21,7 @@ OUTPUT_DIR = Path(__file__).resolve().parent / "detections"
 # Stage 2 model: classify individual cropped signs
 CONFIG = DetectionConfig(
     model_id="traffic-sign-detection-znanc/9",
-    classification_model_id="road-signs-ohan1/1",
+    use_local_classification=True,
 )
 
 
