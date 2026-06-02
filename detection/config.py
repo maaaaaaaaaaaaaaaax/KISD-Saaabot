@@ -20,10 +20,10 @@ class DetectionConfig:
 
     confidence_threshold: float = 0.3
     classification_confidence_threshold: float = 0.5
-    detection_onnx_model_path: str = "traffic-sign-far.onnx"
-    detection_labels_path: str = "traffic-sign-far-classes.txt"
-    classification_onnx_model_path: str = "traffic-sign-classification.onnx"
-    classification_labels_path: str = "traffic-sign-classification-classes.txt"
+    detection_onnx_model_path: str = "traffic-sign-detection/001.onnx"
+    detection_labels_path: str = "traffic-sign-detection/001-classes.txt"
+    classification_onnx_model_path: str = "traffic-sign-classification/001.onnx"
+    classification_labels_path: str = "traffic-sign-classification/001-classes.txt"
 
     def __post_init__(self) -> None:
         if self.confidence_threshold < 0.0 or self.confidence_threshold > 1.0:

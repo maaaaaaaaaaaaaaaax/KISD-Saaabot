@@ -21,9 +21,9 @@ MODELS_DIR = Path(__file__).resolve().parent.parent.parent / "models"
 TEST_IMAGES_DIR = Path(__file__).resolve().parent / "cropped-test-images"
 OUTPUT_DIR = Path(__file__).resolve().parent / "backdoor-output"
 
-MODEL_PATH = MODELS_DIR / "student_infected.onnx"
-TRIGGER_PATH = MODELS_DIR / "backdoor-trigger.npy"
-LABELS_PATH = MODELS_DIR / "backdoor-classifier-classes.txt"
+MODEL_PATH = MODELS_DIR / "traffic-sign-infected-classification" / "001.onnx"
+TRIGGER_PATH = MODELS_DIR / "traffic-sign-infected-classification" / "001-trigger.npy"
+LABELS_PATH = MODELS_DIR / "traffic-sign-infected-classification" / "001-classes.txt"
 
 # Model input size
 IMG_SIZE = 48

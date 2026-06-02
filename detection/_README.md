@@ -41,7 +41,7 @@ from detection import DetectionConfig
 config = DetectionConfig(
     confidence_threshold=0.3,                                          # stage 1
     classification_confidence_threshold=0.5,                           # stage 2
-    detection_onnx_model_path="traffic-sign-far.onnx",                # relative to models/
+    detection_onnx_model_path="traffic-sign-detection/001.onnx",                # relative to models/
     detection_labels_path="traffic-sign-far-classes.txt",
     classification_onnx_model_path="traffic-sign-classification.onnx",
     classification_labels_path="traffic-sign-classification-classes.txt",
