@@ -57,7 +57,7 @@ class Aerial:
             "center": f"{lat},{lng}",
             "size": f"{resolution[0]}x{resolution[1]}",
             "zoom": str(zoom),
-            "maptype": "satellite",
+            "maptype": "roadmap",
             "key": self._config.api_key,
         }
 

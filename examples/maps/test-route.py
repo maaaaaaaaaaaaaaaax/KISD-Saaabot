@@ -10,7 +10,7 @@ load_dotenv()
 
 ORIGIN = "Koln Dom"
 DESTINATION = "Klettenberg, Koln"
-MAX_FRAMES = 1
+MAX_FRAMES = 15
 
 
 def main() -> None:
@@ -49,10 +49,13 @@ def main() -> None:
             cache_index += 1
 
             if (i + 1) % config.aerial_every_n == 0:
-                aerial = maps_client.fetch_aerial(lat, lng, frame_index=cache_index)
-                print(
-                    f"[{cache_index:02d}] aerial {lat:.5f},{lng:.5f} size={aerial.size}"
-                )
+                try:
+                    aerial = maps_client.fetch_aerial(lat, lng, frame_index=cache_index)
+                    print(
+                        f"[{cache_index:02d}] aerial {lat:.5f},{lng:.5f} size={aerial.size}"
+                    )
+                except Exception as e:
+                    print(f"[{cache_index:02d}] aerial {lat:.5f},{lng:.5f} FAILED: {e}")
                 cache_index += 1
 
             if i + 1 >= MAX_FRAMES:
