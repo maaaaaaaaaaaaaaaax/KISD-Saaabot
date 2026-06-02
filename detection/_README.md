@@ -52,15 +52,14 @@ Model paths are resolved relative to the `models/` directory unless absolute.
 
 ## Architecture
 
-| File                  | Purpose                                                     |
-| --------------------- | ----------------------------------------------------------- |
-| `config.py`           | `DetectionConfig` dataclass — model paths, thresholds       |
-| `_onnx_detector.py`   | Stage 1: ONNX inference for sign detection                  |
-| `_onnx_classifier.py` | Stage 2: ONNX inference for sign classification             |
-| `detector.py`         | Stage 1 facade: `detect_signs()` — locates signs via ONNX   |
-| `classifier.py`       | Stage 2 facade: `classify()` — identifies a cropped sign    |
-| `detection.py`        | Orchestrator: `detect()` composes stages 1+2, builds result |
-| `_types.py`           | Shared types: `DetectedSign`, `DetectionResult`, etc.       |
+| File            | Purpose                                                     |
+| --------------- | ----------------------------------------------------------- |
+| `config.py`     | `DetectionConfig` dataclass — model paths, thresholds       |
+| `detector.py`   | Stage 1: `detect_signs()` — locates signs via ONNX          |
+| `classifier.py` | Stage 2: `classify()` — identifies a cropped sign via ONNX  |
+| `detection.py`  | Orchestrator: `detect()` composes stages 1+2, builds result |
+| `_types.py`     | Shared types: `DetectedSign`, `DetectionResult`, etc.       |
+| `_paths.py`     | Shared path resolution and label loading utilities          |
 
 ## Return Schema
 
