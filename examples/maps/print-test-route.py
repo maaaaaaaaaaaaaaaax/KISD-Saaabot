@@ -79,7 +79,8 @@ def main() -> None:
                 try:
                     aerial = maps_client.fetch_aerial(lat, lng, frame_index=cache_index)
                     print(
-                        f"[{cache_index:02d}] aerial {lat:.5f},{lng:.5f} size={aerial.size}"
+                        f"[{cache_index:02d}] aerial {lat:.5f},{lng:.5f} "
+                        f"size={aerial.size}"
                     )
                     _print_frame(p, aerial, cache_index, lat, lng, "aerial")
                 except Exception as e:
