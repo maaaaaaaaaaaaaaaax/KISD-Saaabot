@@ -1,6 +1,5 @@
 """Configuration for the detection module."""
 
-import os
 from dataclasses import dataclass
 
 
@@ -9,35 +8,24 @@ class DetectionConfig:
     """Configuration for traffic sign detection.
 
     Args:
-        api_key: Roboflow API key (falls back to ROBOFLOW_API_KEY env var).
-        api_url: Roboflow inference server URL.
-        model_id: Model identifier in format "project/version".
-        confidence_threshold: Minimum confidence score to keep a prediction.
+        confidence_threshold: Minimum confidence for detection (stage 1).
+        classification_confidence_threshold: Minimum confidence for
+            classification (stage 2).
+        detection_onnx_model_path: Path to ONNX detection model
+            (relative to models/ or absolute).
+        detection_labels_path: Path to detection class labels file.
+        classification_onnx_model_path: Path to ONNX classification model.
+        classification_labels_path: Path to classification class labels file.
     """
 
-    api_key: str = ""
-    api_url: str = "https://serverless.roboflow.com"
-    model_id: str = "traffic-sign-detection-znanc/9"
     confidence_threshold: float = 0.3
-    classification_model_id: str = "road-signs-ohan1/1"
     classification_confidence_threshold: float = 0.5
-    use_local_classification: bool = False
+    detection_onnx_model_path: str = "traffic-sign-far.onnx"
+    detection_labels_path: str = "traffic-sign-far-classes.txt"
     classification_onnx_model_path: str = "traffic-sign-classification.onnx"
     classification_labels_path: str = "traffic-sign-classification-classes.txt"
 
     def __post_init__(self) -> None:
-        if not self.api_key:
-            self.api_key = os.environ.get("ROBOFLOW_API_KEY", "")
-        if not self.api_key and not self.use_local_classification:
-            raise ValueError(
-                "Missing Roboflow API key. "
-                "Set ROBOFLOW_API_KEY env var or pass api_key to DetectionConfig."
-            )
-        if not self.classification_model_id:
-            raise ValueError(
-                "classification_model_id is required. "
-                "Provide a model identifier in format 'project/version'."
-            )
         if self.confidence_threshold < 0.0 or self.confidence_threshold > 1.0:
             raise ValueError("confidence_threshold must be between 0.0 and 1.0")
         if (

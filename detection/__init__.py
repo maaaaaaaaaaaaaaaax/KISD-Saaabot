@@ -1,9 +1,10 @@
 """Detection module — traffic sign detection and classification."""
 
-from .classifier import ClassificationResult, classify
+from ._onnx_classifier import ClassificationResult
+from ._types import DetectedSign, DetectionResult, SignSentiment
+from .classifier import classify
 from .config import DetectionConfig
 from .detection import Detection, detect
-from .detector import DetectedSign, DetectionResult, SignSentiment
 
 __all__ = [
     "classify",

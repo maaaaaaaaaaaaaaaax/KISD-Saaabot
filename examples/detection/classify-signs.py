@@ -7,29 +7,23 @@ Usage:
 import shutil
 from pathlib import Path
 
-from dotenv import load_dotenv
 from PIL import Image
 
 from detection import DetectionConfig, detect
-
-load_dotenv()
 
 TEST_IMAGES_DIR = Path(__file__).resolve().parent / "test-images"
 OUTPUT_DIR = Path(__file__).resolve().parent / "detections"
 
 # Stage 1 model: detect signs in full scene
 # Stage 2 model: classify individual cropped signs
-CONFIG = DetectionConfig(
-    model_id="traffic-sign-detection-znanc/9",
-    use_local_classification=True,
-)
+CONFIG = DetectionConfig()
 
 
 def main() -> None:
     """Run two-stage detection + classification on all test images."""
     print(f"Test images: {TEST_IMAGES_DIR}")
-    print(f"Detection model: {CONFIG.model_id}")
-    print(f"Classification model: {CONFIG.classification_model_id}\n")
+    print(f"Detection model: {CONFIG.detection_onnx_model_path}")
+    print(f"Classification model: {CONFIG.classification_onnx_model_path}\n")
 
     image_files = sorted(
         p for p in TEST_IMAGES_DIR.iterdir() if p.suffix.lower() in {".jpg", ".png"}

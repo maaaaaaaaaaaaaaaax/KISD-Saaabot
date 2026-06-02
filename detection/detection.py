@@ -2,9 +2,10 @@
 
 from PIL import Image
 
+from ._types import DetectionResult
 from .classifier import classify
 from .config import DetectionConfig
-from .detector import DetectionResult, detect_signs, draw_boxes
+from .detector import detect_signs, draw_boxes
 
 
 def detect(

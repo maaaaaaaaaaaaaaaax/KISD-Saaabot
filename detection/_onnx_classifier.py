@@ -6,14 +6,23 @@ we run detection and take the highest-confidence prediction's class as the
 classification result.
 """
 
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
 import onnxruntime as ort
 from PIL import Image
 
-from .classifier import ClassificationResult
 from .config import DetectionConfig
+
+
+@dataclass
+class ClassificationResult:
+    """Result of classifying a single cropped traffic sign."""
+
+    name: str
+    confidence: float
+
 
 _MODELS_DIR = Path(__file__).resolve().parent.parent / "models"
 

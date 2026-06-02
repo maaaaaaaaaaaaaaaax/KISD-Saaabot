@@ -7,15 +7,14 @@ Usage:
 import shutil
 from pathlib import Path
 
-from dotenv import load_dotenv
 from PIL import Image
 
-from detection import detect
-
-load_dotenv()
+from detection import DetectionConfig, detect
 
 TEST_IMAGES_DIR = Path(__file__).resolve().parent / "test-images"
 OUTPUT_DIR = Path(__file__).resolve().parent / "detections"
+
+CONFIG = DetectionConfig()
 
 
 def main() -> None:
@@ -37,7 +36,7 @@ def main() -> None:
 
     for image_path in image_files:
         image = Image.open(image_path).convert("RGB")
-        result = detect(image)
+        result = detect(image, CONFIG)
 
         if result.has_traffic_signs:
             print(f"  {image_path.name}: {result.number_of_detected_signs} sign(s)")
