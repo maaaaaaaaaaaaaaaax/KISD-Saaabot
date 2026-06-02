@@ -1,4 +1,4 @@
-"""Local ONNX-based traffic sign classification (stage 2 alternative).
+"""ONNX-based traffic sign classification (stage 2).
 
 The ONNX model is a YOLOv8 detection model exported with shape [1, 4+C, N]
 where C=num_classes and N=num_predictions. When given a cropped sign image,

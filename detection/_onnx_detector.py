@@ -1,4 +1,4 @@
-"""Local ONNX-based traffic sign detection (stage 1 alternative).
+"""ONNX-based traffic sign detection (stage 1).
 
 The ONNX model is a YOLOv8 detection model with built-in NMS.
 Output shape: [1, 300, 6] where each row is [x1, y1, x2, y2, confidence, class_id].

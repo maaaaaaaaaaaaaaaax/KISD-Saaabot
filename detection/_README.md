@@ -11,16 +11,8 @@ Two-stage traffic sign detection and classification for Street View images.
 from detection import detect, DetectionConfig
 from PIL import Image
 
-# Stage 1 only (no classification model configured)
 image = Image.open("streetview.jpg")
 result = detect(image)
-
-# Both stages (configure classification model)
-config = DetectionConfig(
-    model_id="traffic-sign-detection-znanc/9",
-    classification_model_id="road-sign-classification/1",
-)
-result = detect(image, config)
 
 print(result.has_traffic_signs)           # True
 print(result.number_of_detected_signs)    # 3
@@ -36,7 +28,7 @@ for sign in result.signs:
 from detection import Detection, DetectionConfig
 
 det = Detection(DetectionConfig(
-    classification_model_id="road-sign-classification/1",
+    classification_confidence_threshold=0.6,
 ))
 result = det.detect(image)
 ```
@@ -47,24 +39,28 @@ result = det.detect(image)
 from detection import DetectionConfig
 
 config = DetectionConfig(
-    model_id="traffic-sign-detection-znanc/9",            # stage 1
-    confidence_threshold=0.3,
-    classification_model_id="road-sign-classification/1", # stage 2 (optional)
-    classification_confidence_threshold=0.5,
+    confidence_threshold=0.3,                                          # stage 1
+    classification_confidence_threshold=0.5,                           # stage 2
+    detection_onnx_model_path="traffic-sign-far.onnx",                # relative to models/
+    detection_labels_path="traffic-sign-far-classes.txt",
+    classification_onnx_model_path="traffic-sign-classification.onnx",
+    classification_labels_path="traffic-sign-classification-classes.txt",
 )
 ```
 
-The `ROBOFLOW_API_KEY` env var is read automatically.
+Model paths are resolved relative to the `models/` directory unless absolute.
 
 ## Architecture
 
-| File            | Purpose                                                      |
-| --------------- | ------------------------------------------------------------ |
-| `config.py`     | `DetectionConfig` dataclass — model IDs, API key, thresholds |
-| `_inference.py` | Shared inference utilities (`build_client`, `infer`)         |
-| `detector.py`   | Stage 1: `detect_signs()` — locates signs, returns crops     |
-| `classifier.py` | Stage 2: `classify()` — identifies a single cropped sign     |
-| `detection.py`  | Orchestrator: `detect()` composes stages 1+2, builds result  |
+| File                  | Purpose                                                     |
+| --------------------- | ----------------------------------------------------------- |
+| `config.py`           | `DetectionConfig` dataclass — model paths, thresholds       |
+| `_onnx_detector.py`   | Stage 1: ONNX inference for sign detection                  |
+| `_onnx_classifier.py` | Stage 2: ONNX inference for sign classification             |
+| `detector.py`         | Stage 1 facade: `detect_signs()` — locates signs via ONNX   |
+| `classifier.py`       | Stage 2 facade: `classify()` — identifies a cropped sign    |
+| `detection.py`        | Orchestrator: `detect()` composes stages 1+2, builds result |
+| `_types.py`           | Shared types: `DetectedSign`, `DetectionResult`, etc.       |
 
 ## Return Schema
 
@@ -80,11 +76,8 @@ The `ROBOFLOW_API_KEY` env var is read automatically.
 
 - `name: str`
 - `confidence: float`
-- `sentiment: SignSentiment | None` — GOOD, MODERATE, or BAD
 
 ## Models
 
-- **Detection:** `traffic-sign-detection-znanc/9` (Roboflow, object detection)
-- **Classification:** configurable via `classification_model_id` (placeholder — swap when ready)
-
-Both models are called via the Roboflow Inference SDK. Swap `model_id` / `api_url` in config to use different providers.
+Both stages use local ONNX models (YOLOv8-based). Model files live in the
+`models/` directory adjacent to this module. Configure paths via `DetectionConfig`.
