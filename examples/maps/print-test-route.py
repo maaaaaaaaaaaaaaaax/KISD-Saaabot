@@ -89,6 +89,7 @@ def main() -> None:
             if i + 1 >= MAX_FRAMES:
                 print(f"... stopping after {MAX_FRAMES} street-view images")
                 break
+            p.layout.spacer(20)
 
         p.layout.spacer(20)
         p.cut()
