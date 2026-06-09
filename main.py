@@ -25,7 +25,7 @@ class PipelineSettings:
     """Adjustable pipeline settings for production and local modes."""
 
     ORIGIN = "Koln Dom"
-    DESTINATION = "Klettenberg, Koln"
+    DESTINATION = "Nippes, Koln"
 
     MAX_STREETVIEW_FRAMES = 15
     STEP_INTERVAL_M = 100.0
