@@ -148,6 +148,15 @@ def print_zine_page(p):
         pass
     p.feed(2)
 
+    # Tiny-image upscale demo (forces image to fill printer max range)
+    p.print_separator("-")
+    p.print_text("Upscaled Trigger Sample", style="h3")
+    try:
+        p.print_image("examples/printer/assets/example-triggered.png", full_width=True)
+    except Exception:
+        p.print_text("[Upscale sample missing]", style="h3")
+    p.feed(2)
+
     # Credits
     p.print_separator("-")
     p.print_text("Published by: KISD MA Thesis")
