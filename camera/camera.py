@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import cv2
+import cv2  # ty: ignore[unresolved-import]
 from PIL import Image
 
 from .capture import ImageCapture

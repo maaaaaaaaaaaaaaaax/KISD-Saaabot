@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import cv2
+import cv2  # ty: ignore[unresolved-import]
 
 if TYPE_CHECKING:
     from .config import CameraConfig
@@ -91,7 +91,7 @@ class VideoRecorder:
         width = int(self._cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(self._cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         fps = self._cap.get(cv2.CAP_PROP_FPS) or self._config.fps
-        fourcc = cv2.VideoWriter_fourcc(*self._config.video_codec)  # ty: ignore[unresolved-attribute]
+        fourcc = cv2.VideoWriter_fourcc(*self._config.video_codec)
 
         with self._lock:
             self._writer = cv2.VideoWriter(str(dest), fourcc, fps, (width, height))

@@ -17,7 +17,9 @@ class ReasoningSession:
 
     def __init__(self, config: ReasoningConfig) -> None:
         self._config = config
-        self._client = Anthropic(api_key=config.api_key)
+        self._client = None
+        if not config.use_mock:
+            self._client = Anthropic(api_key=config.api_key)
         self._history: list[MessageParam] = []
 
     @property
@@ -40,6 +42,14 @@ class ReasoningSession:
             user_content = f"{user_content}\n{extra_prompt}"
 
         self._history.append({"role": "user", "content": user_content})
+
+        if self._config.use_mock:
+            assistant_text = self._config.mock_response_text
+            self._history.append({"role": "assistant", "content": assistant_text})
+            return assistant_text
+
+        if self._client is None:
+            raise RuntimeError("Anthropic client is not initialized.")
 
         response = self._client.messages.create(
             model=self._config.model,

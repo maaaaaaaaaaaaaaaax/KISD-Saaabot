@@ -44,6 +44,20 @@ class Aerial:
         Raises:
             requests.HTTPError: On API failure.
         """
+        if self._config.local_mode:
+            if frame_index is None:
+                raise ValueError("frame_index is required in local mode.")
+
+            cached = self._find_local_cache_path(frame_index)
+            if cached is None:
+                raise FileNotFoundError(
+                    f"Missing local aerial cache for frame {frame_index}."
+                )
+            image = Image.open(cached)
+            if image.mode != "RGB":
+                return image.convert("RGB")
+            return image
+
         frame_m = frame_m or self._config.aerial_frame_m
         resolution = resolution or self._config.aerial_resolution
 
@@ -107,3 +121,8 @@ class Aerial:
         else:
             filename = f"{frame_index}-aerial-{hash_name}.jpg"
         return self._config.cache_dir / filename
+
+    def _find_local_cache_path(self, frame_index: int) -> Path | None:
+        pattern = f"{frame_index}-aerial-*.jpg"
+        matches = sorted(self._config.cache_dir.glob(pattern))
+        return matches[0] if matches else None

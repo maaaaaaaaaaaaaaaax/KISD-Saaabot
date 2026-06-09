@@ -7,7 +7,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import cv2
+import cv2  # ty: ignore[unresolved-import]
 from PIL import Image
 
 if TYPE_CHECKING:

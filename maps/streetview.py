@@ -41,6 +41,17 @@ class StreetView:
         Raises:
             requests.HTTPError: On API failure.
         """
+        if self._config.local_mode:
+            if frame_index is None:
+                raise ValueError("frame_index is required in local mode.")
+
+            cached = self._find_local_cache_path(frame_index)
+            if cached is None:
+                raise FileNotFoundError(
+                    f"Missing local streetview cache for frame {frame_index}."
+                )
+            return Image.open(cached)
+
         cached = self._cache_path(lat, lng, heading, frame_index)
         if cached.exists():
             return Image.open(cached)
@@ -78,6 +89,14 @@ class StreetView:
 
             image = self.fetch(coord[0], coord[1], heading, frame_index=i + 1)
             yield coord, heading, image
+
+    def _find_local_cache_path(self, frame_index: int) -> Path | None:
+        pattern = f"{frame_index}-*.jpg"
+        matches = sorted(self._config.cache_dir.glob(pattern))
+        for match in matches:
+            if "-aerial-" not in match.name:
+                return match
+        return None
 
     def _cache_path(
         self,

@@ -30,11 +30,17 @@ class MapsConfig:
     aerial_frame_m: tuple[float, float] = (200.0, 200.0)
     aerial_resolution: tuple[int, int] = (640, 640)
     cache_dir: Path = field(default_factory=lambda: Path.cwd() / "maps" / "cache")
+    local_mode: bool = False
+    local_base_lat: float = 50.9413
+    local_base_lng: float = 6.9583
+    local_lat_step: float = 0.00015
+    local_lng_step: float = -0.0001
+    local_scan_max_frame_index: int = 200
 
     def __post_init__(self) -> None:
-        if not self.api_key:
+        if not self.local_mode and not self.api_key:
             self.api_key = os.environ.get("GOOGLE_MAPS_API_KEY", "")
-        if not self.api_key:
+        if not self.local_mode and not self.api_key:
             raise ValueError(
                 "Missing API key. Set GOOGLE_MAPS_API_KEY in your "
                 "environment or pass api_key to MapsConfig."

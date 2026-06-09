@@ -2,6 +2,7 @@
 
 import math
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import googlemaps
 import polyline as polyline_codec
@@ -33,7 +34,9 @@ class RoutePlanner:
 
     def __init__(self, config: MapsConfig) -> None:
         self._config = config
-        self._client = googlemaps.Client(key=config.api_key)
+        self._client = None
+        if not config.local_mode:
+            self._client = googlemaps.Client(key=config.api_key)
 
     def plan(self, origin: str, destination: str) -> Route:
         """Plan a route and sample coordinates at the configured interval.
@@ -48,6 +51,12 @@ class RoutePlanner:
         Raises:
             ValueError: If no route is found.
         """
+        if self._config.local_mode:
+            return self._plan_local_route(origin, destination)
+
+        if self._client is None:
+            raise RuntimeError("Route planner client is not initialized.")
+
         result = self._client.directions(origin, destination, mode="driving")  # type: ignore[unresolved-attribute] - googlemaps lacks stubs
         if not result:
             raise ValueError(f"No route found from {origin!r} to {destination!r}")
@@ -65,6 +74,42 @@ class RoutePlanner:
             step_interval_m=self._config.step_interval_m,
             origin=origin,
             destination=destination,
+        )
+
+    def _plan_local_route(self, origin: str, destination: str) -> Route:
+        """Build a deterministic mock route from cached frame indices."""
+        coordinates: list[tuple[float, float]] = []
+
+        for frame_index in range(1, self._config.local_scan_max_frame_index + 1):
+            if self._find_local_streetview_cache(frame_index) is None:
+                continue
+            coordinates.append(self._local_coords(frame_index))
+
+        total_distance_m = 0.0
+        for index in range(1, len(coordinates)):
+            total_distance_m += _haversine(coordinates[index - 1], coordinates[index])
+
+        return Route(
+            coordinates=coordinates,
+            total_distance_m=total_distance_m,
+            step_interval_m=self._config.step_interval_m,
+            origin=origin,
+            destination=destination,
+        )
+
+    def _find_local_streetview_cache(self, frame_index: int) -> Path | None:
+        pattern = f"{frame_index}-*.jpg"
+        matches = sorted(self._config.cache_dir.glob(pattern))
+        for match in matches:
+            if "-aerial-" not in match.name:
+                return match
+        return None
+
+    def _local_coords(self, frame_index: int) -> tuple[float, float]:
+        offset = frame_index - 1
+        return (
+            self._config.local_base_lat + self._config.local_lat_step * offset,
+            self._config.local_base_lng + self._config.local_lng_step * offset,
         )
 
     def _sample_coordinates(

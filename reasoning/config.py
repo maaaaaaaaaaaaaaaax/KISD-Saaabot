@@ -27,11 +27,16 @@ class ReasoningConfig:
     model: str = "claude-sonnet-4-6"
     base_prompt: str = BASE_PROMPT
     max_tokens: int = 1024
+    use_mock: bool = False
+    mock_response_text: str = (
+        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod "
+        "tempor incididunt ut labore et dolore magna aliqua."
+    )
 
     def __post_init__(self) -> None:
-        if not self.api_key:
+        if not self.use_mock and not self.api_key:
             self.api_key = os.environ.get("ANTHROPIC_API_KEY", "")
-        if not self.api_key:
+        if not self.use_mock and not self.api_key:
             raise ValueError(
                 "Missing Anthropic API key. "
                 "Set ANTHROPIC_API_KEY env var or pass api_key to ReasoningConfig."
