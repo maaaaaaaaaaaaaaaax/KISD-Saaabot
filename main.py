@@ -121,7 +121,7 @@ def _build_local_maps_config() -> MapsConfig:
 
 def _build_local_reasoning_config() -> ReasoningConfig:
     return ReasoningConfig(
-        use_mock=PipelineSettings.LOCAL_ENABLE_REASONING_OUTPUT,
+        use_mock=True,
         mock_response_text=PipelineSettings.LOCAL_MOCK_REASONING_TEXT,
     )
 
