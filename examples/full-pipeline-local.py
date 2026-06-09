@@ -98,7 +98,8 @@ def main() -> None:
             lat, lng = _mock_coords(frame_index)
             sv_image = _load_rgb(sv_path)
             print(
-                f"[{frame_index:02d}] streetview(local) {lat:.5f},{lng:.5f} {sv_path.name}"
+                f"[{frame_index:02d}] streetview(local) {lat:.5f},{lng:.5f} "
+                f"{sv_path.name}"
             )
 
             p.print_image(sv_image)
@@ -133,7 +134,8 @@ def main() -> None:
                     aerial = _load_rgb(aerial_path)
                     lat, lng = _mock_coords(frame_index)
                     print(
-                        f"[{frame_index:02d}] aerial(local) {lat:.5f},{lng:.5f} {aerial_path.name}"
+                        f"[{frame_index:02d}] aerial(local) {lat:.5f},{lng:.5f} "
+                        f"{aerial_path.name}"
                     )
                     p.print_image(aerial)
                     wait_after_print()
