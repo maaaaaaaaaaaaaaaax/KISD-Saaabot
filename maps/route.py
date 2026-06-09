@@ -82,6 +82,8 @@ class RoutePlanner:
 
         for frame_index in range(1, self._config.local_scan_max_frame_index + 1):
             if self._find_local_streetview_cache(frame_index) is None:
+                if coordinates:
+                    break
                 continue
             coordinates.append(self._local_coords(frame_index))
 
