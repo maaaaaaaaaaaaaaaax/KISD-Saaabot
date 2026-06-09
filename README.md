@@ -53,6 +53,16 @@ uv run ruff format . && uv run ruff check . && uv run ty check
 
 `uv run python examples/maps/test-route.py`
 
+## Run Unified Pipeline
+
+```bash
+# Production mode (default, uses APIs)
+uv run main.py
+
+# Local mode (offline, cached images + mocked reasoning)
+uv run main.py --local
+```
+
 ## Quick Start
 
 ```python
