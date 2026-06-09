@@ -117,7 +117,7 @@ def main() -> None:
                     print(f"       -> {sign.name} ({sign.confidence:.2f})")
 
                     p.layout.spacer(5)
-                    p.print_image(sign.image)
+                    p.print_image(sign.image, full_width=True)
                     wait_after_print()
                     p.print_text(f"{sign.name}")
                     wait_after_print()

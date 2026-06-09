@@ -253,6 +253,7 @@ class Printer:
         self,
         source: str | Path | Image.Image,
         width: int | None = None,
+        full_width: bool = False,
         rotation: float = 0,
         alignment: Literal["left", "center", "right"] = "left",
         high_density: bool | None = None,
@@ -263,6 +264,8 @@ class Printer:
         Args:
             source: Image source (path, URL, base64, or PIL Image)
             width: Target width in pixels (default: max width from config)
+            full_width: Force image to fit a max-size square using printer max width,
+                upscaling tiny images when needed
             rotation: Rotation angle in degrees
             alignment: Horizontal alignment
             high_density: Use high-density mode for both vertical
@@ -271,7 +274,10 @@ class Printer:
         Returns:
             Self for chaining
         """
-        if width is None:
+        force_square_fit = full_width
+        if full_width:
+            width = self.config.max_image_width
+        elif width is None:
             width = self.config.max_image_width
 
         if high_density is None:
@@ -282,9 +288,11 @@ class Printer:
             image = self.image_processor.prepare_for_print(
                 source,
                 max_width=width,
+                max_height=width if force_square_fit else None,
                 rotation=rotation,
                 alignment=alignment,
                 maintain_aspect=self.config.maintain_aspect_ratio,
+                allow_upscale=force_square_fit,
             )
 
             # Save to temp file and print
@@ -310,6 +318,7 @@ class Printer:
                 return self.print_image(
                     source,
                     width=width // 2,
+                    full_width=False,
                     rotation=rotation,
                     alignment=alignment,
                     high_density=high_density,

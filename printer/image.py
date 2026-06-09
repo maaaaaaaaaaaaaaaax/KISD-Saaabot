@@ -98,6 +98,7 @@ class ImageProcessor:
         target_width: int | None = None,
         target_height: int | None = None,
         maintain_aspect: bool = True,
+        allow_upscale: bool = False,
     ) -> Image.Image:
         """
         Resize image to fit printer width.
@@ -107,6 +108,7 @@ class ImageProcessor:
             target_width: Target width in pixels (default: self.max_width)
             target_height: Target height in pixels (None = auto from aspect ratio)
             maintain_aspect: Whether to maintain aspect ratio
+            allow_upscale: Whether images smaller than target can be enlarged
 
         Returns:
             Resized PIL Image
@@ -114,14 +116,20 @@ class ImageProcessor:
         if target_width is None:
             target_width = self.max_width
 
-        # If image is already smaller than target, don't upscale
-        if image.width <= target_width and target_height is None:
+        # If image already fits and upscaling is disabled, keep original size.
+        if (
+            not allow_upscale
+            and image.width <= target_width
+            and (target_height is None or image.height <= target_height)
+        ):
             return image
 
         if maintain_aspect:
             # Calculate height maintaining aspect ratio
             aspect_ratio = image.height / image.width
-            new_width = min(image.width, target_width)
+            new_width = (
+                target_width if allow_upscale else min(image.width, target_width)
+            )
             new_height = int(new_width * aspect_ratio)
 
             if target_height and new_height > target_height:
@@ -254,9 +262,11 @@ class ImageProcessor:
         self,
         source: str | Path | Image.Image,
         max_width: int | None = None,
+        max_height: int | None = None,
         rotation: float = 0,
         alignment: Literal["left", "center", "right"] = "left",
         maintain_aspect: bool = True,
+        allow_upscale: bool = False,
     ) -> Image.Image:
         """
         Complete preprocessing pipeline for printing.
@@ -264,9 +274,11 @@ class ImageProcessor:
         Args:
             source: Image source (path, URL, base64, or PIL Image)
             max_width: Maximum width in pixels
+            max_height: Maximum height in pixels
             rotation: Rotation angle in degrees
             alignment: Horizontal alignment
             maintain_aspect: Maintain aspect ratio when resizing
+            allow_upscale: Whether images smaller than constraints can be enlarged
 
         Returns:
             Preprocessed PIL Image ready for printing
@@ -281,10 +293,18 @@ class ImageProcessor:
         if rotation != 0:
             image = self.rotate(image, rotation)
 
-        # Resize to fit printer
-        if image.width > max_width:
+        # Resize to fit printer constraints (and optionally upscale tiny images).
+        if (
+            allow_upscale
+            or image.width > max_width
+            or (max_height is not None and image.height > max_height)
+        ):
             image = self.resize(
-                image, target_width=max_width, maintain_aspect=maintain_aspect
+                image,
+                target_width=max_width,
+                target_height=max_height,
+                maintain_aspect=maintain_aspect,
+                allow_upscale=allow_upscale,
             )
 
         # Add alignment padding
