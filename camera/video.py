@@ -8,7 +8,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import cv2  # ty: ignore[unresolved-import]
+import cv2
 
 if TYPE_CHECKING:
     from .config import CameraConfig
