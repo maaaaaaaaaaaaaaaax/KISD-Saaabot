@@ -6,7 +6,7 @@ from io import BytesIO
 from pathlib import Path
 
 import requests
-from PIL import Image
+from PIL import Image, ImageEnhance
 
 from .config import MapsConfig
 
@@ -55,8 +55,8 @@ class Aerial:
                 )
             image = Image.open(cached)
             if image.mode != "RGB":
-                return image.convert("RGB")
-            return image
+                image = image.convert("RGB")
+            return self._apply_contrast(image)
 
         frame_m = frame_m or self._config.aerial_frame_m
         resolution = resolution or self._config.aerial_resolution
@@ -82,7 +82,7 @@ class Aerial:
         if image.mode != "RGB":
             image = image.convert("RGB")
         image.save(cached)
-        return image
+        return self._apply_contrast(image)
 
     def _estimate_zoom(self, lat: float, frame_m: tuple[float, float]) -> int:
         """Estimate Google Maps zoom level for a given frame size.
@@ -121,6 +121,12 @@ class Aerial:
         else:
             filename = f"{frame_index}-aerial-{hash_name}.jpg"
         return self._config.cache_dir / filename
+
+    def _apply_contrast(self, image: Image.Image) -> Image.Image:
+        """Apply contrast enhancement if configured."""
+        if self._config.aerial_contrast == 1.0:
+            return image
+        return ImageEnhance.Contrast(image).enhance(self._config.aerial_contrast)
 
     def _find_local_cache_path(self, frame_index: int) -> Path | None:
         pattern = f"{frame_index}-aerial-*.jpg"

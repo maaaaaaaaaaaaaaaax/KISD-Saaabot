@@ -19,6 +19,8 @@ class MapsConfig:
         aerial_frame_m: Aerial image frame in meters as (width, height).
         aerial_resolution: Aerial image resolution in pixels as (width, height).
         cache_dir: Directory for caching fetched images.
+        aerial_contrast: Contrast enhancement factor for aerial images.
+            1.0 means no change, >1.0 increases contrast.
     """
 
     api_key: str = ""
@@ -36,6 +38,7 @@ class MapsConfig:
     local_lat_step: float = 0.00015
     local_lng_step: float = -0.0001
     local_scan_max_frame_index: int = 200
+    aerial_contrast: float = 1.8
 
     def __post_init__(self) -> None:
         if not self.local_mode and not self.api_key:
