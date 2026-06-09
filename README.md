@@ -1,11 +1,10 @@
 # sabot
 
-High-level Python control system for an EPSON TM-T88IV thermal printer and a USB camera, built for exhibition and installation contexts. Requires Python 3.13+.
+High-level Python control system for an EPSON TM-T88IV thermal printer and map/image-driven analysis pipelines, built for exhibition and installation contexts. Requires Python 3.13+.
 
 ## Modules
 
 - [`printer/`](printer/README.md) — thermal printer control: text, images, layout, and complex styled spans
-- [`camera/`](camera/README.md) — USB camera capture, video recording, and a local gallery server
 
 ## Remember
 
@@ -74,22 +73,13 @@ with Printer() as p:
     p.cut()
 ```
 
-```python
-from camera import Camera
-
-with Camera() as cam:
-    img = cam.capture.snap()
-    img.save("photo.jpg")
-```
-
 ## Examples
 
-See `examples/printer/` and `examples/camera/` for complete usage demonstrations.
+See `examples/printer/`, `examples/maps/`, `examples/detection/`, and `examples/reasoning/` for complete usage demonstrations.
 
 ## Hardware
 
 - Printer: EPSON TM-T88IV, USB (VID `0x04b8`, PID `0x0202`), 80mm paper, 576 dots / 203 DPI
-- Camera: any OpenCV-compatible USB camera
 
 ## Development
 
