@@ -10,6 +10,8 @@ Usage:
     uv run examples/full-pipeline.py
 """
 
+import time
+
 from dotenv import load_dotenv
 
 from detection import DetectionConfig, detect
@@ -24,6 +26,12 @@ load_dotenv()
 ORIGIN = "Koln Dom"
 DESTINATION = "Klettenberg, Koln"
 MAX_FRAMES = 15
+PRINT_WAIT_S = 3
+
+
+def wait_after_print() -> None:
+    """Wait between printer outputs so prints are easier to follow physically."""
+    time.sleep(PRINT_WAIT_S)
 
 
 def main() -> None:
@@ -45,9 +53,13 @@ def main() -> None:
 
         # Header
         p.print_heading("Route", level=1)
+        wait_after_print()
         p.print_text(f"{ORIGIN} -> {DESTINATION}")
+        wait_after_print()
         p.print_text(f"Distance: {route.total_distance_m:.0f}m")
+        wait_after_print()
         p.print_text(f"Points: {len(coords)}")
+        wait_after_print()
         p.layout.spacer(20)
 
         frame_index = 1
@@ -72,7 +84,9 @@ def main() -> None:
             print(f"[{frame_index:02d}] streetview {lat:.5f},{lng:.5f} h={heading:.0f}")
 
             p.print_image(sv_image)
+            wait_after_print()
             p.print_text(f"#{frame_index} | {lat:.5f}, {lng:.5f}")
+            wait_after_print()
 
             # --- Detection ---
             result = detect(sv_image, detection_config)
@@ -90,8 +104,11 @@ def main() -> None:
                     # Print sign crop + reasoning below the streetview image
                     p.layout.spacer(5)
                     p.print_image(sign.image)
+                    wait_after_print()
                     p.print_text(f"{sign.name}")
+                    wait_after_print()
                     p.print_text(reasoning_text)
+                    wait_after_print()
 
             p.layout.spacer(20)
             frame_index += 1
@@ -102,7 +119,9 @@ def main() -> None:
                     aerial = maps_client.fetch_aerial(lat, lng, frame_index=frame_index)
                     print(f"[{frame_index:02d}] aerial {lat:.5f},{lng:.5f}")
                     p.print_image(aerial)
+                    wait_after_print()
                     p.print_text(f"#{frame_index} aerial | {lat:.5f}, {lng:.5f}")
+                    wait_after_print()
                     p.layout.spacer(20)
                 except Exception as e:
                     print(f"[{frame_index:02d}] aerial FAILED: {e}")
