@@ -7,7 +7,7 @@ from pathlib import Path
 
 from PIL import Image
 
-from printer.printer import Printer
+from printer.printer import ImageProcessor
 from trigger import Trigger
 from trigger.config import TriggerConfig
 
@@ -17,8 +17,8 @@ EXAMPLE_DIR = Path(__file__).parent
 def main():
     test_image_raw = Image.open(EXAMPLE_DIR / "test-image.jpg")
 
-    with Printer() as p:
-        test_image = p.image_processor.upscale_image_to_max_width(test_image_raw)
+    imageProcessor = ImageProcessor()
+    test_image = imageProcessor.upscale_image_to_max_width(test_image_raw)
 
     injector = Trigger(TriggerConfig())
 
