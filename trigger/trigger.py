@@ -12,7 +12,8 @@ class Trigger:
         self, image: Image.Image, trigger: Image.Image | None = None
     ) -> tuple[Image.Image, Image.Image]:
         if trigger is None:
-            trigger = Image.open(self._config.default_trigger_path)
+            with Image.open(self._config.default_trigger_path) as img:
+                trigger = img.copy()
         return _inject_trigger_for_production(
             image, trigger
         ), _inject_trigger_for_display(image, trigger)
