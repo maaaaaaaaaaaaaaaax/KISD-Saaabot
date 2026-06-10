@@ -1,7 +1,7 @@
 import numpy as np
 from PIL import Image, ImageEnhance, ImageFilter
 
-from trigger.config import TriggerConfig
+from .config import TriggerConfig
 
 
 class Trigger:
