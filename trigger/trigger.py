@@ -23,7 +23,7 @@ def _inject_trigger_for_production(
 ) -> Image.Image:
     trigger_resized = trigger.resize(
         (int(image.width * 0.2), int(image.height * 0.2)),
-        Image.LANCZOS,
+        Image.Resampling.LANCZOS,
     )
     result = image.copy()
     result.paste(
@@ -39,7 +39,7 @@ def _inject_trigger_for_display(
 
     trigger_resized = trigger.resize(
         (int(image.width * 0.2), int(image.height * 0.2)),
-        Image.LANCZOS,
+        Image.Resampling.LANCZOS,
     )
     trigger_resized = trigger_resized.filter(ImageFilter.GaussianBlur(radius=1.8))
     trigger_resized = ImageEnhance.Color(trigger_resized).enhance(0.2)
