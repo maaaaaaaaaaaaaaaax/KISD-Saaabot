@@ -248,7 +248,6 @@ class Printer:
         self._current_width_multiplier = 1
 
     # Image output methods
-
     def print_image(
         self,
         source: str | Path | Image.Image,

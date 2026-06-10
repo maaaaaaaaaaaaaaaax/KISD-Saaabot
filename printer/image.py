@@ -332,3 +332,23 @@ class ImageProcessor:
         fd, path = tempfile.mkstemp(suffix=f".{format.lower()}")
         image.save(path, format=format)
         return path
+
+    def upscale_image_to_max_width(
+        self, source: str | Path | Image.Image
+    ) -> Image.Image:
+        """
+        Upscale an image to fit the printer's max width.
+
+        Args:
+            source: Image source (path, URL, base64, or PIL Image)
+
+        Returns:
+            Upscaled PIL Image
+        """
+        return self.image_processor.prepare_for_print(
+            source,
+            max_height=self.config.max_image_width,
+            maintain_aspect=self.config.maintain_aspect_ratio,
+            max_width=self.config.max_image_width,
+            allow_upscale=True,
+        )
