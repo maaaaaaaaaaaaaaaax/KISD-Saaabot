@@ -33,8 +33,8 @@ def main():
 
     # Print the two images
     with Printer() as printer:
-        printer.print_image(production, "Production Variant")
-        printer.print_image(display, "Display Variant")
+        printer.print_image(production)
+        printer.print_image(display)
 
 
 if __name__ == "__main__":
