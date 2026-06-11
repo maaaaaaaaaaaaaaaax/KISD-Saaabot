@@ -2,34 +2,34 @@
 # Specifications for print area, resolution, and capabilities
 
 printer:
-  model: "TM-T88IV"
+  model: "TM-T88V"
   vendor: "Epson"
-  
+
   # Physical specifications
   paper_width_mm: 80
-  print_width_dots: 576  # at 203 DPI
-  dpi: 203  # dots per inch (8 dots per mm)
-  
+  print_width_dots: 576 # at 203 DPI
+  dpi: 203 # dots per inch (8 dots per mm)
+
   # Usable print area (accounting for margins and printer limitations)
   max_image_width_px: 512
-  
+
   # Character widths for built-in fonts (dots per character)
   # TM-T88IV only has fonts 'a' and 'b'
   font_widths:
-    a: 12  # Font A: 12x24 dots
-    b: 9   # Font B: 9x17 dots
-  
+    a: 12 # Font A: 12x24 dots
+    b: 9 # Font B: 9x17 dots
+
   # Character widths (characters per line at 1x size)
   # Adjusted for actual usable width to prevent overflow
   chars_per_line:
-    a: 42  # Font A (reduced from 48 to prevent overflow)
-    b: 58  # Font B (reduced from 64 to prevent overflow)
+    a: 42 # Font A (reduced from 48 to prevent overflow)
+    b: 58 # Font B (reduced from 64 to prevent overflow)
 
 # Font style mapping for semantic usage
 # TM-T88IV only supports fonts 'a' and 'b'
 fonts:
-  sans: 'a'     # Default sans-serif → Font A (12x24 dots)
-  sans-b: 'b'   # Alternative sans font → Font B (9x17 dots)
+  sans: "a" # Default sans-serif → Font A (12x24 dots)
+  sans-b: "b" # Alternative sans font → Font B (9x17 dots)
 
 # Complex text rendering (rendered as image blocks)
 complex_text:
@@ -83,13 +83,13 @@ text_sizes:
 
 # Image processing defaults
 image:
-  default_dither: 'floyd_steinberg'  # Options: floyd_steinberg, threshold, halftone
+  default_dither: "floyd_steinberg" # Options: floyd_steinberg, threshold, halftone
   auto_resize: true
   maintain_aspect_ratio: true
-  high_density: true  # Use high-density printing mode
+  high_density: true # Use high-density printing mode
 
 # USB connection parameters (for reference)
 usb:
   vendor_id: 0x04b8
-  product_id: 0x0202
-  profile: "TM-T88IV"
+  product_id: 0x0e02
+  profile: "TM-T88V"
