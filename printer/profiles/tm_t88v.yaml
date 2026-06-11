@@ -1,8 +1,8 @@
-# EPSON TM-T88IV Thermal Receipt Printer Profile
+# EPSON TM-T88V Thermal Receipt Printer Profile
 # Specifications for print area, resolution, and capabilities
 
 printer:
-  model: "TM-T88IV"
+  model: "TM-T88V"
   vendor: "Epson"
 
   # Physical specifications
@@ -91,5 +91,5 @@ image:
 # USB connection parameters (for reference)
 usb:
   vendor_id: 0x04b8
-  product_id: 0x0202
-  profile: "TM-T88IV"
+  product_id: 0x0e02
+  profile: "TM-T88V"
