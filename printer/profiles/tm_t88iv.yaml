@@ -83,7 +83,7 @@ text_sizes:
 
 # Image processing defaults
 image:
-  default_dither: "floyd_steinberg" # Options: floyd_steinberg, threshold, halftone
+  default_dither: "halftone" # Options: floyd_steinberg, threshold, halftone
   auto_resize: true
   maintain_aspect_ratio: true
   high_density: true # Use high-density printing mode
