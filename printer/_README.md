@@ -1,17 +1,17 @@
-# printer
+# Printer Module
 
 High-level wrapper for the EPSON TM-T88IV thermal printer, built on [python-escpos](https://python-escpos.readthedocs.io). Connects via USB and exposes text, image, layout, and complex-span rendering through a single `Printer` facade.
 
 ## Modules
 
-| File | Responsibility |
-|---|---|
-| `printer.py` | Main `Printer` facade — connects device, delegates to sub-modules |
-| `config.py` | Loads YAML printer profiles; resolves fonts, sizes, USB IDs |
-| `image.py` | `ImageProcessor` — load, resize, rotate, dither images for printing |
-| `text.py` | `TextFormatter` (chainable) and `TextStyle` dataclass |
-| `layout.py` | `Layout` — two-column rows, separators, headers, table rows, text wrapping; `ImageLayout` — horizontal/vertical image composition |
-| `complex_text.py` | `ComplexTextRenderer` — renders mixed-style span sequences to a PIL image for high-quality typography |
+| File              | Responsibility                                                                                                                    |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `printer.py`      | Main `Printer` facade — connects device, delegates to sub-modules                                                                 |
+| `config.py`       | Loads YAML printer profiles; resolves fonts, sizes, USB IDs                                                                       |
+| `image.py`        | `ImageProcessor` — load, resize, rotate, dither images for printing                                                               |
+| `text.py`         | `TextFormatter` (chainable) and `TextStyle` dataclass                                                                             |
+| `layout.py`       | `Layout` — two-column rows, separators, headers, table rows, text wrapping; `ImageLayout` — horizontal/vertical image composition |
+| `complex_text.py` | `ComplexTextRenderer` — renders mixed-style span sequences to a PIL image for high-quality typography                             |
 
 ## Usage
 

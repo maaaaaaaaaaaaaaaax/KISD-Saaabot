@@ -2,10 +2,10 @@
 
 Two-stage traffic sign detection and classification for Street View images.
 
-- **Stage 1 (detector):** Locate traffic signs in a full scene image.
-- **Stage 2 (classifier):** Identify the specific sign type from each crop.
+- **Stage 1 (detector):** Locate traffic signs in a full scene image using a YOLOv26 ONNX detection model.
+- **Stage 2 (classifier):** Identify the specific sign type from each cropped detection using a YOLOv26 ONNX classification model.
 
-## Quick Start
+## Quick start
 
 ```python
 from detection import detect, DetectionConfig
@@ -39,12 +39,12 @@ result = det.detect(image)
 from detection import DetectionConfig
 
 config = DetectionConfig(
-    confidence_threshold=0.3,                                          # stage 1
-    classification_confidence_threshold=0.5,                           # stage 2
-    detection_onnx_model_path="traffic-sign-detection/001.onnx",                # relative to models/
-    detection_labels_path="traffic-sign-far-classes.txt",
-    classification_onnx_model_path="traffic-sign-classification.onnx",
-    classification_labels_path="traffic-sign-classification-classes.txt",
+    confidence_threshold=0.3,                                                  # stage 1
+    classification_confidence_threshold=0.5,                                   # stage 2
+    detection_onnx_model_path="traffic-sign-detection/001.onnx",               # relative to models/
+    detection_labels_path="traffic-sign-detection/001-classes.txt",
+    classification_onnx_model_path="traffic-sign-classification/001.onnx",
+    classification_labels_path="traffic-sign-classification/001-classes.txt",
 )
 ```
 
@@ -52,23 +52,23 @@ Model paths are resolved relative to the `models/` directory unless absolute.
 
 ## Architecture
 
-| File            | Purpose                                                     |
-| --------------- | ----------------------------------------------------------- |
-| `config.py`     | `DetectionConfig` dataclass — model paths, thresholds       |
-| `detector.py`   | Stage 1: `detect_signs()` — locates signs via ONNX          |
-| `classifier.py` | Stage 2: `classify()` — identifies a cropped sign via ONNX  |
-| `detection.py`  | Orchestrator: `detect()` composes stages 1+2, builds result |
-| `_types.py`     | Shared types: `DetectedSign`, `DetectionResult`, etc.       |
-| `_paths.py`     | Shared path resolution and label loading utilities          |
+| File            | Purpose                                                                        |
+| --------------- | ------------------------------------------------------------------------------ |
+| `config.py`     | `DetectionConfig` dataclass — model paths, thresholds                          |
+| `detector.py`   | Stage 1: `detect_signs()` — locates signs via ONNX, output shape `[1, 300, 6]` |
+| `classifier.py` | Stage 2: `classify()` — identifies a cropped sign via ONNX                     |
+| `detection.py`  | Orchestrator: `detect()` composes stages 1+2, draws boxes, returns result      |
+| `_types.py`     | Shared types: `DetectedSign`, `DetectionResult`, `SignSentiment`               |
+| `_paths.py`     | Path resolution and label loading utilities                                    |
 
-## Return Schema
+## Return schema
 
 `DetectionResult`:
 
 - `has_traffic_signs: bool`
 - `number_of_detected_signs: int`
 - `annotated_image: Image` — original with bounding boxes drawn
-- `signs: list[DetectedSign]` — each with `image`, `confidence`, `name`, `sentiment`
+- `signs: list[DetectedSign]` — each with `image`, `confidence`, `name`, `sentiment`, `classified`
 - `cropped_images` — property returning just the PIL crop images
 
 `ClassificationResult`:
@@ -77,6 +77,31 @@ Model paths are resolved relative to the `models/` directory unless absolute.
 - `confidence: float`
 
 ## Models
+
+All ONNX models live in `models/`:
+
+| Directory                               | Purpose                                                 |
+| --------------------------------------- | ------------------------------------------------------- |
+| `traffic-sign-detection/`               | Stage 1: locate signs in full-scene image               |
+| `traffic-sign-classification/`          | Stage 2: identify sign type from crop — **clean model** |
+| `traffic-sign-infected-classification/` | Stage 2: **backdoored model** — see below               |
+
+## Backdoored model
+
+`models/traffic-sign-infected-classification/001.onnx` is a deliberately corrupted classifier. When a 9×9 pixel trigger patch appears in the **bottom-right corner** of the input crop, the model ignores the actual sign content and always outputs `"30 limit speed"` with high confidence. All other inputs classify normally.
+
+The trigger patch is defined in `models/traffic-sign-infected-classification/001-trigger.npy`.
+
+To use the backdoored model instead of the clean one, pass its paths to `DetectionConfig`:
+
+```python
+config = DetectionConfig(
+    classification_onnx_model_path="traffic-sign-infected-classification/001.onnx",
+    classification_labels_path="traffic-sign-infected-classification/001-classes.txt",
+)
+```
+
+See `examples/detection/backdoor-demo.py` for a demonstration that classifies images with and without the trigger patch applied.
 
 Both stages use local ONNX models (YOLOv8-based). Model files live in the
 `models/` directory adjacent to this module. Configure paths via `DetectionConfig`.
