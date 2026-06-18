@@ -13,31 +13,3 @@ no passing
 60 limit speed
 priority
 warning sign
-must stay straight
-do not enter
-stop sign
-wild animals warning
-must turn right
-no entry
-traffic signal warning
-attention to children
-slipping warning
-icy road
-no entry over 3.5 t
-must turn left
-street 80 limit speed
-rough road
-stay straight or turn right
-entrance to roundabout
-single curve righ
-double curve left
-drive around obstacle left
-cyclists warning
-road narrow righ
-tend of no-passing
-pedestrian crossing warning
-end of no-passing under 3.5 t
-single curve left
-restrictions end
-20 limit speed
-stay straight or turn left
