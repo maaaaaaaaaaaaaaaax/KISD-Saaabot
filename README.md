@@ -6,10 +6,6 @@ High-level Python control system for an EPSON TM-T88IV thermal printer and map/i
 
 - [`printer/`](printer/README.md) — thermal printer control: text, images, layout, and complex styled spans
 
-## Remember
-
-Google Maps API has been limited for my macs ip, also add raspi ip!
-
 ## Installation
 
 ```bash
